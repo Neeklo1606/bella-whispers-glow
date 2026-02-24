@@ -44,7 +44,7 @@ export default function Dashboard() {
             <span>15 марта 2026</span>
           </div>
           <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-            <div className="h-full gradient-gold rounded-full" style={{ width: "65%" }} />
+            <div className="h-full bg-primary rounded-full" style={{ width: "65%" }} />
           </div>
         </div>
         <Button variant="outline" size="sm" className="w-full" asChild>
@@ -99,7 +99,7 @@ export default function Dashboard() {
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="gradient-gold rounded-2xl p-5 text-primary-foreground"
+        className="bg-primary rounded-2xl p-5 text-primary-foreground"
       >
         <h3 className="font-semibold mb-1">Не заполнили стиль-анкету?</h3>
         <p className="text-sm opacity-90 mb-3">Получите персональные рекомендации под ваш стиль</p>

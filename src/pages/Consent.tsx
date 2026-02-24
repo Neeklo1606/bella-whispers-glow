@@ -15,8 +15,8 @@ export default function Consent() {
         className="w-full max-w-md bg-card rounded-2xl p-6 shadow-elevated"
       >
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl gradient-gold flex items-center justify-center">
-            <Shield className="h-5 w-5 text-primary-foreground" />
+          <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+            <Shield className="h-5 w-5 text-foreground" />
           </div>
           <h1 className="text-xl font-bold">Защита персональных данных</h1>
         </div>

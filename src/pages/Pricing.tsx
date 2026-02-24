@@ -72,7 +72,7 @@ export default function Pricing() {
               className={`relative bg-card rounded-2xl p-6 shadow-card flex flex-col ${i === 1 ? "ring-2 ring-primary" : ""}`}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 gradient-gold text-primary-foreground text-xs font-medium px-3 py-1 rounded-full whitespace-nowrap">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-medium px-3 py-1 rounded-full whitespace-nowrap">
                   {plan.badge}
                 </span>
               )}

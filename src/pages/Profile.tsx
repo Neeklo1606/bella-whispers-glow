@@ -19,7 +19,7 @@ export default function Profile() {
       {/* User info */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4">
         <Avatar className="h-16 w-16">
-          <AvatarFallback className="gradient-gold text-primary-foreground text-xl font-bold">
+          <AvatarFallback className="bg-secondary text-foreground text-xl font-bold">
             <User className="h-7 w-7" />
           </AvatarFallback>
         </Avatar>

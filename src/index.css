@@ -6,26 +6,26 @@
 
 @layer base {
   :root {
-    --background: 36 100% 98%;
-    --foreground: 0 0% 17%;
+    --background: 0 0% 98%;
+    --foreground: 345 25% 25%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 17%;
+    --card-foreground: 345 25% 25%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 17%;
+    --popover-foreground: 345 25% 25%;
 
-    --primary: 33 40% 63%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 345 25% 25%;
+    --primary-foreground: 340 24% 87%;
 
-    --secondary: 36 38% 85%;
-    --secondary-foreground: 0 0% 17%;
+    --secondary: 340 24% 87%;
+    --secondary-foreground: 345 25% 25%;
 
-    --muted: 36 30% 94%;
-    --muted-foreground: 0 0% 55%;
+    --muted: 340 15% 92%;
+    --muted-foreground: 345 10% 50%;
 
-    --accent: 30 24% 53%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 340 24% 87%;
+    --accent-foreground: 345 25% 25%;
 
     --destructive: 0 58% 65%;
     --destructive-foreground: 0 0% 100%;
@@ -34,58 +34,52 @@
     --success-foreground: 0 0% 100%;
 
     --warning: 30 72% 70%;
-    --warning-foreground: 0 0% 17%;
+    --warning-foreground: 345 25% 25%;
 
-    --border: 36 20% 90%;
-    --input: 36 20% 90%;
-    --ring: 33 40% 63%;
+    --border: 344 20% 80%;
+    --input: 344 20% 85%;
+    --ring: 345 25% 25%;
 
     --radius: 1rem;
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 0 0% 17%;
-    --sidebar-primary: 33 40% 63%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 36 38% 85%;
-    --sidebar-accent-foreground: 0 0% 17%;
-    --sidebar-border: 36 20% 90%;
-    --sidebar-ring: 33 40% 63%;
-
-    /* Custom tokens */
-    --gradient-gold: linear-gradient(135deg, hsl(33 40% 63%) 0%, hsl(30 24% 53%) 100%);
-    --shadow-soft: 0 4px 20px rgba(201, 165, 121, 0.1);
-    --shadow-card: 0 2px 12px rgba(201, 165, 121, 0.08);
-    --shadow-elevated: 0 8px 32px rgba(201, 165, 121, 0.15);
+    --sidebar-foreground: 345 25% 25%;
+    --sidebar-primary: 345 25% 25%;
+    --sidebar-primary-foreground: 340 24% 87%;
+    --sidebar-accent: 340 24% 87%;
+    --sidebar-accent-foreground: 345 25% 25%;
+    --sidebar-border: 344 20% 80%;
+    --sidebar-ring: 345 25% 25%;
   }
 
   .dark {
-    --background: 30 10% 8%;
-    --foreground: 36 30% 94%;
-    --card: 30 10% 12%;
-    --card-foreground: 36 30% 94%;
-    --popover: 30 10% 12%;
-    --popover-foreground: 36 30% 94%;
-    --primary: 33 40% 63%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 30 15% 20%;
-    --secondary-foreground: 36 30% 94%;
-    --muted: 30 10% 18%;
-    --muted-foreground: 30 10% 60%;
-    --accent: 30 24% 53%;
-    --accent-foreground: 0 0% 100%;
+    --background: 345 15% 8%;
+    --foreground: 340 15% 90%;
+    --card: 345 15% 12%;
+    --card-foreground: 340 15% 90%;
+    --popover: 345 15% 12%;
+    --popover-foreground: 340 15% 90%;
+    --primary: 340 24% 87%;
+    --primary-foreground: 345 25% 25%;
+    --secondary: 345 15% 18%;
+    --secondary-foreground: 340 15% 90%;
+    --muted: 345 10% 18%;
+    --muted-foreground: 340 10% 55%;
+    --accent: 345 15% 18%;
+    --accent-foreground: 340 15% 90%;
     --destructive: 0 58% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 30 10% 20%;
-    --input: 30 10% 20%;
-    --ring: 33 40% 63%;
-    --sidebar-background: 30 10% 10%;
-    --sidebar-foreground: 36 30% 94%;
-    --sidebar-primary: 33 40% 63%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 30 15% 18%;
-    --sidebar-accent-foreground: 36 30% 94%;
-    --sidebar-border: 30 10% 20%;
-    --sidebar-ring: 33 40% 63%;
+    --border: 345 10% 20%;
+    --input: 345 10% 20%;
+    --ring: 340 24% 87%;
+    --sidebar-background: 345 15% 10%;
+    --sidebar-foreground: 340 15% 90%;
+    --sidebar-primary: 340 24% 87%;
+    --sidebar-primary-foreground: 345 25% 25%;
+    --sidebar-accent: 345 15% 18%;
+    --sidebar-accent-foreground: 340 15% 90%;
+    --sidebar-border: 345 10% 20%;
+    --sidebar-ring: 340 24% 87%;
   }
 }
 
@@ -106,20 +100,16 @@
 }
 
 @layer utilities {
-  .gradient-gold {
-    background: var(--gradient-gold);
-  }
-
   .shadow-soft {
-    box-shadow: var(--shadow-soft);
+    box-shadow: 0 4px 20px rgba(80, 48, 56, 0.06);
   }
 
   .shadow-card {
-    box-shadow: var(--shadow-card);
+    box-shadow: 0 2px 12px rgba(80, 48, 56, 0.04);
   }
 
   .shadow-elevated {
-    box-shadow: var(--shadow-elevated);
+    box-shadow: 0 8px 32px rgba(80, 48, 56, 0.08);
   }
 
   .text-balance {
