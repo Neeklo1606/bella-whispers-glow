@@ -1,100 +1,95 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BookOpen, Target, MessageCircle, Star, ChevronRight, Lock, Shield } from "lucide-react";
+import { ArrowRight, BookOpen, Target, MessageCircle, Star, Lock, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/hero-fashion.jpg";
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1, y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  }),
-};
+import heroImage from "@/assets/hero-bella.jpg";
 
 const values = [
-  { icon: BookOpen, title: "База знаний", desc: "Гайды, капсулы, разборы гардероба от профессионального стилиста" },
-  { icon: Target, title: "Персонализация", desc: "Рекомендации под ваш стиль, тип фигуры и бюджет" },
-  { icon: MessageCircle, title: "Закрытое комьюнити", desc: "Общение с единомышленницами и поддержка стилиста" },
+  { icon: BookOpen, title: "База знаний", desc: "Гайды, капсулы и разборы гардероба" },
+  { icon: Target, title: "Персонализация", desc: "Рекомендации под ваш стиль и бюджет" },
+  { icon: MessageCircle, title: "Комьюнити", desc: "Общение с единомышленницами" },
 ];
 
 const testimonials = [
-  { name: "Анна К.", text: "Белла полностью изменила мой подход к гардеробу. Теперь одеваюсь осознанно и с удовольствием!", rating: 5 },
-  { name: "Мария Д.", text: "Капсулы — это находка! Собрала базовый гардероб за неделю, и всё сочетается.", rating: 5 },
-  { name: "Елена С.", text: "Персональная консультация стоила каждой копейки. Рекомендую премиум-подписку!", rating: 5 },
-];
-
-const previewCards = [
-  "Капсула: Весна 2026", "Тренды сезона", "Базовый гардероб",
-  "Обувь на каждый день", "Сумки: гид по стилям", "Образы для офиса",
+  { name: "Анна К.", text: "Белла полностью изменила мой подход к гардеробу." },
+  { name: "Мария Д.", text: "Капсулы — это находка! Собрала базовый гардероб за неделю." },
+  { name: "Елена С.", text: "Персональная консультация стоила каждой копейки." },
 ];
 
 export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
+      <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md">
         <div className="container flex items-center justify-between h-14">
-          <Link to="/" className="text-lg font-bold tracking-tight text-foreground">
-            Bella<span className="text-primary">Hasias</span>
+          <Link to="/" className="text-sm font-semibold tracking-widest uppercase text-foreground">
+            BH
           </Link>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/pricing">Тарифы</Link>
-            </Button>
-            <Button variant="gold" size="sm" asChild>
-              <Link to="/login">Войти</Link>
-            </Button>
-          </div>
+          <nav className="hidden md:flex items-center gap-8 text-sm">
+            <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">Тарифы</Link>
+            <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">Контакты</Link>
+          </nav>
+          <Button variant="default" size="sm" asChild>
+            <Link to="/login">Связаться</Link>
+          </Button>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={heroImage} alt="Fashion editorial" className="w-full h-full object-cover object-top" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background" />
-        </div>
-        <div className="container relative pt-20 pb-32 md:pt-32 md:pb-40">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            className="max-w-lg"
+      {/* Hero — split layout like bellahasias.ru */}
+      <section className="min-h-[90vh] flex flex-col md:flex-row">
+        <div className="flex-1 flex flex-col justify-center px-6 md:px-16 lg:px-24 py-12 md:py-0">
+          <motion.p
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-6"
           >
-            <motion.h1
-              variants={fadeUp} custom={0}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] text-foreground text-balance"
-            >
-              Ваш персональный стилист в кармане
-            </motion.h1>
-            <motion.p
-              variants={fadeUp} custom={1}
-              className="mt-4 text-lg text-muted-foreground leading-relaxed max-w-md"
-            >
-              Закрытое сообщество с эксклюзивным контентом от Беллы Хасиас. Капсулы, тренды, персональные рекомендации.
-            </motion.p>
-            <motion.div variants={fadeUp} custom={2} className="mt-8 flex flex-col sm:flex-row gap-3">
-              <Button variant="gold" size="xl" asChild>
-                <Link to="/pricing">Начать бесплатный пробный период</Link>
-              </Button>
-            </motion.div>
-            <motion.p variants={fadeUp} custom={3} className="mt-3 text-xs text-muted-foreground flex items-center gap-1">
-              <Shield className="h-3.5 w-3.5" /> 7 дней бесплатно • Отмена в любое время
-            </motion.p>
+            Стилист · UGC · Контент
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.6 }}
+            className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] tracking-tight text-foreground"
+          >
+            Bella<br />Hasias
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="mt-6 text-base text-muted-foreground max-w-sm leading-relaxed"
+          >
+            Закрытое сообщество с эксклюзивным контентом. Консультации по стилю, капсулы и персональные рекомендации.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="mt-8 flex gap-3"
+          >
+            <Button variant="default" size="lg" asChild>
+              <Link to="/pricing">Связаться</Link>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <Link to="/pricing" className="gap-2">Смотреть работы <ArrowRight className="h-4 w-4" /></Link>
+            </Button>
           </motion.div>
         </div>
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="flex-1 min-h-[50vh] md:min-h-0"
+        >
+          <img
+            src={heroImage}
+            alt="Bella Hasias"
+            className="w-full h-full object-cover object-top"
+          />
+        </motion.div>
       </section>
 
       {/* Value Props */}
-      <section className="py-16 md:py-24">
+      <section className="py-20 md:py-28 bg-card">
         <div className="container">
-          <motion.h2
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-            className="text-2xl md:text-3xl font-bold text-center mb-12"
-          >
-            Что вас ждёт внутри
-          </motion.h2>
-          <div className="grid gap-6 md:grid-cols-3">
+          <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground text-center mb-3">Услуги</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-14">Что вас ждёт внутри</h2>
+          <div className="grid gap-8 md:grid-cols-3">
             {values.map((v, i) => (
               <motion.div
                 key={v.title}
@@ -102,27 +97,25 @@ export default function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-card rounded-2xl p-6 shadow-card hover:shadow-elevated transition-shadow duration-300"
+                className="text-center"
               >
-                <div className="w-12 h-12 rounded-xl gradient-gold flex items-center justify-center mb-4">
-                  <v.icon className="h-6 w-6 text-primary-foreground" />
+                <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
+                  <v.icon className="h-5 w-5 text-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{v.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{v.desc}</p>
+                <h3 className="text-base font-semibold mb-2">{v.title}</h3>
+                <p className="text-sm text-muted-foreground">{v.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="py-16 bg-card">
+      {/* Testimonials */}
+      <section className="py-20 md:py-28">
         <div className="container">
-          <div className="text-center mb-10">
-            <p className="text-primary font-semibold text-sm uppercase tracking-wider mb-2">Отзывы</p>
-            <h2 className="text-2xl md:text-3xl font-bold">Более 500 участниц доверяют Белле</h2>
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
+          <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground text-center mb-3">Отзывы</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-14">Более 500 участниц</h2>
+          <div className="grid gap-6 md:grid-cols-3 max-w-3xl mx-auto">
             {testimonials.map((t, i) => (
               <motion.div
                 key={t.name}
@@ -130,83 +123,43 @@ export default function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-background rounded-2xl p-5 shadow-card"
+                className="text-center"
               >
-                <div className="flex gap-0.5 mb-3">
-                  {Array.from({ length: t.rating }).map((_, j) => (
-                    <Star key={j} className="h-4 w-4 fill-primary text-primary" />
+                <div className="flex justify-center gap-0.5 mb-3">
+                  {Array.from({ length: 5 }).map((_, j) => (
+                    <Star key={j} className="h-3.5 w-3.5 fill-foreground text-foreground" />
                   ))}
                 </div>
-                <p className="text-sm text-foreground leading-relaxed mb-3">"{t.text}"</p>
-                <p className="text-xs font-medium text-muted-foreground">{t.name}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">"{t.text}"</p>
+                <p className="text-xs font-medium">{t.name}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Content Preview */}
-      <section className="py-16 md:py-24">
-        <div className="container">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-10">Превью контента</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {previewCards.map((title, i) => (
-              <motion.div
-                key={title}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="relative bg-secondary rounded-2xl aspect-[3/4] flex items-end p-4 overflow-hidden group cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 to-transparent" />
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-foreground/20 backdrop-blur-sm">
-                  <div className="flex items-center gap-1.5 text-primary-foreground text-xs font-medium">
-                    <Lock className="h-3.5 w-3.5" /> Подпишитесь, чтобы увидеть
-                  </div>
-                </div>
-                <p className="relative text-sm font-medium text-primary-foreground">{title}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Teaser */}
-      <section className="py-16 bg-card">
+      {/* CTA */}
+      <section className="py-20 md:py-28 bg-secondary">
         <div className="container text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-3">Гибкие тарифы от 990₽/месяц</h2>
-          <p className="text-muted-foreground mb-6">Выберите план, который подходит именно вам</p>
-          <Button variant="gold" size="lg" asChild>
-            <Link to="/pricing">Посмотреть тарифы <ChevronRight className="h-4 w-4" /></Link>
-          </Button>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-20 md:py-28">
-        <div className="container text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
-            Начните свой путь к идеальному стилю
-          </h2>
-          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-            Присоединяйтесь к закрытому сообществу и получите доступ к эксклюзивному контенту
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Начните свой путь к идеальному стилю</h2>
+          <p className="text-muted-foreground mb-8 max-w-md mx-auto text-sm">
+            Гибкие тарифы от 990₽/месяц. 7 дней бесплатно.
           </p>
-          <Button variant="gold" size="xl" asChild>
-            <Link to="/pricing">Попробовать 7 дней бесплатно</Link>
+          <Button variant="default" size="lg" asChild>
+            <Link to="/pricing">Посмотреть тарифы <ChevronRight className="h-4 w-4" /></Link>
           </Button>
         </div>
       </section>
 
       {/* Sticky mobile CTA */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-md border-t border-border md:hidden z-40">
-        <Button variant="gold" size="lg" className="w-full" asChild>
+        <Button variant="default" size="lg" className="w-full" asChild>
           <Link to="/pricing">Попробовать 7 дней бесплатно</Link>
         </Button>
       </div>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-border md:mb-0 mb-16">
+      <footer className="py-8 border-t border-border mb-16 md:mb-0">
         <div className="container text-center text-xs text-muted-foreground space-y-2">
           <p>© 2026 BellaHasias. Все права защищены.</p>
           <div className="flex justify-center gap-4">

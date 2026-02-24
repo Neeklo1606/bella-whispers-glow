@@ -51,7 +51,7 @@ export default function AdminDashboard() {
               key={i}
               initial={{ height: 0 }} animate={{ height: `${h}%` }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="flex-1 gradient-gold rounded-t-md"
+              className="flex-1 bg-primary rounded-t-md"
             />
           ))}
         </div>
