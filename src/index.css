@@ -101,15 +101,15 @@
 
 @layer utilities {
   .shadow-soft {
-    box-shadow: 0 4px 20px rgba(80, 48, 56, 0.06);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   }
 
   .shadow-card {
-    box-shadow: 0 2px 12px rgba(80, 48, 56, 0.04);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
   }
 
   .shadow-elevated {
-    box-shadow: 0 8px 32px rgba(80, 48, 56, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
   }
 
   .text-balance {
