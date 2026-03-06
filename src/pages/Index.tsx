@@ -120,7 +120,7 @@ export default function Index() {
               <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
                 Закрытый канал в Telegram о стиле
               </p>
-              <h1 className="text-[28px] md:text-5xl font-light uppercase tracking-tight leading-[1.1] mb-3">
+              <h1 className="text-[28px] md:text-5xl font-serif font-light tracking-tight leading-[1.1] mb-3">
                 Стильный чат
                 <br />
                 Беллы Хасиас
@@ -178,7 +178,7 @@ export default function Index() {
           <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-2">
             Подписка на месяц
           </p>
-          <p className="text-3xl md:text-4xl font-extralight tracking-tight mb-1">
+          <p className="text-3xl md:text-4xl font-serif font-extralight tracking-tight mb-1">
             990 ₽
           </p>
           <p className="text-[10px] text-muted-foreground mb-1">
@@ -301,7 +301,7 @@ export default function Index() {
       {/* ═══ FINAL CTA ═══ */}
       <section id="join" className="px-5 py-14 md:py-20 border-t border-border mb-14 md:mb-0">
         <div className="max-w-[480px] mx-auto text-center">
-          <h2 className="text-xl md:text-2xl font-light lowercase tracking-tight mb-2">
+          <h2 className="text-xl md:text-2xl font-serif font-light lowercase tracking-tight mb-2">
             Готова присоединиться?
           </h2>
           <p className="text-[10px] text-muted-foreground mb-5">
