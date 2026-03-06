@@ -4,7 +4,7 @@ import heroImage from "@/assets/hero-bella.jpg";
 import fashionImage from "@/assets/for-whom-bg.jpg";
 
 const TELEGRAM_LINK = "https://t.me/bellahasias_bot";
-const CONTACT_LINK = "https://t.me/bellahasias";
+const CONTACT_LINK = "https://t.me/Bella_hasias";
 
 const painPoints = [
   "Полный гардероб, но нечего надеть",
