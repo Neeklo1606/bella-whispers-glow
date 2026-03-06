@@ -200,7 +200,7 @@ export default function Index() {
             </p>
           </motion.div>
         </div>
-        </div>
+      </section>
       </section>
 
       {/* ═══ PRICING — second screen ═══ */}
