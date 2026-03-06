@@ -182,7 +182,7 @@ export default function Index() {
             990 ₽
           </p>
           <p className="text-[10px] text-muted-foreground mb-1">
-            первый месяц · далее 1 500 ₽
+            всегда 990 ₽/мес · отмена в любой момент
           </p>
           <p className="text-[10px] text-muted-foreground/70 mb-5">
             Оплата через Telegram‑бота, доступ сразу после оплаты
