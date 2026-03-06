@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import heroImage from "@/assets/hero-bella.jpg";
+import fashionImage from "@/assets/hero-fashion.jpg";
 
 const TELEGRAM_LINK = "https://t.me/bellahasias_bot";
 const CONTACT_LINK = "https://t.me/bellahasias";
