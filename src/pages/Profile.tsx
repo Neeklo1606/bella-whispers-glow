@@ -7,7 +7,7 @@ const TELEGRAM_LINK = "https://t.me/bellahasias_bot";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { StatusIndicator } from "@/components/StatusIndicator";
 
-const CONTACT_LINK = "https://t.me/bellahasias";
+const CONTACT_LINK = "https://t.me/Bella_hasias";
 
 export default function Profile() {
   return (
