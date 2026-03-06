@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { StatusIndicator } from "@/components/StatusIndicator";
 
 const payments = [
-  { date: "15 фев 2026", amount: "1 500₽", status: "Оплачен" },
-  { date: "15 янв 2026", amount: "1 500₽", status: "Оплачен" },
+  { date: "15 фев 2026", amount: "990₽", status: "Оплачен" },
+  { date: "15 янв 2026", amount: "990₽", status: "Оплачен" },
   { date: "15 дек 2025", amount: "990₽", status: "Оплачен" },
 ];
 
