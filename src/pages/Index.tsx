@@ -97,36 +97,6 @@ function Header() {
 }
 
 /* ─── mobile sticky CTA ─── */
-
-function MobileStickyBar() {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 300);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  if (!visible) return null;
-
-  return (
-    <motion.div
-      initial={{ y: 80 }}
-      animate={{ y: 0 }}
-      className="fixed bottom-0 left-0 right-0 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] bg-background/90 backdrop-blur-md border-t border-border md:hidden z-40"
-    >
-      <a
-        href={TELEGRAM_LINK}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block w-full py-3.5 bg-foreground text-background text-center text-[10px] tracking-[0.18em] uppercase rounded-full"
-      >
-        Вступить в чат
-      </a>
-    </motion.div>
-  );
-}
-
 /* ─── page ─── */
 
 export default function Index() {
