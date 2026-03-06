@@ -8,7 +8,7 @@ const navItems = [
   { to: "/dashboard/profile", icon: User, label: "Профиль" },
 ];
 
-const TELEGRAM_LINK = "https://t.me/bellahasias_bot";
+const TELEGRAM_LINK = "https://t.me/Bella_hasias";
 
 export function BottomNav() {
   return (
