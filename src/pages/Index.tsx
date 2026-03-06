@@ -327,13 +327,12 @@ export default function Index() {
       </section>
 
       {/* Footer */}
-      <footer className="py-6 border-t border-border mb-14 md:mb-0">
+      <footer className="py-6 border-t border-border pb-20">
         <p className="text-center text-[9px] tracking-[0.15em] uppercase text-muted-foreground">
           © 2026 Bella Hasias
         </p>
       </footer>
-
-      <MobileStickyBar />
+    </div>
     </div>
   );
 }
