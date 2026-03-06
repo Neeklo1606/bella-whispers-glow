@@ -39,7 +39,7 @@ export default function Pricing() {
               <span className="text-4xl font-extralight tracking-tight">990 ₽</span>
             </div>
             <p className="text-[10px] text-muted-foreground mb-6">
-              отмена в любой момент
+              всегда 990 ₽/мес · отмена в любой момент
             </p>
 
             <ul className="space-y-3 mb-6 text-left">
