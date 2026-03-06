@@ -15,7 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+        serif: ['Bikham Cyr Script', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
