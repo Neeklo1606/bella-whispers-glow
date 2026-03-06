@@ -1,58 +1,113 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { User, Palette, Bell, CreditCard, FileText, Shield, HelpCircle, LogOut, ChevronRight } from "lucide-react";
+import { User, CreditCard, HelpCircle, LogOut, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { StatusIndicator } from "@/components/StatusIndicator";
 
-const sections = [
-  { icon: Palette, label: "Стиль-профиль", desc: "Цветотип, фигура, бюджет", to: "/dashboard/onboarding" },
-  { icon: Bell, label: "Уведомления", desc: "Настроить оповещения", to: "#" },
-  { icon: CreditCard, label: "Управлять подпиской", desc: "Базовая • 990₽/мес", to: "/dashboard/subscription" },
-  { icon: Shield, label: "Конфиденциальность", desc: "Политика обработки данных", to: "/privacy" },
-  { icon: FileText, label: "Условия использования", desc: "Правила сервиса", to: "/terms" },
-  { icon: HelpCircle, label: "Поддержка", desc: "Связаться с нами", to: "#" },
-];
+const CONTACT_LINK = "https://t.me/bellahasias";
 
 export default function Profile() {
   return (
-    <div className="container py-6 space-y-6">
-      {/* User info */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4">
-        <Avatar className="h-16 w-16">
-          <AvatarFallback className="bg-secondary text-foreground text-xl font-bold">
-            <User className="h-7 w-7" />
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <h1 className="text-xl font-bold">Пользователь</h1>
-          <p className="text-sm text-muted-foreground">@username</p>
+    <div className="min-h-screen bg-background pb-20">
+      <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
+        <div className="flex items-center justify-center h-12">
+          <span className="text-[10px] tracking-[0.2em] uppercase text-foreground">Профиль</span>
         </div>
-      </motion.div>
+      </header>
 
-      {/* Menu */}
-      <div className="space-y-2">
-        {sections.map((s, i) => (
-          <motion.div key={s.label} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
-            <Link
-              to={s.to}
-              className="flex items-center gap-3 bg-card rounded-xl p-4 shadow-card hover:shadow-elevated transition-shadow tap-highlight-none"
+      <div className="px-5 py-6 space-y-5 max-w-[480px] mx-auto">
+        {/* User info */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3">
+          <Avatar className="h-12 w-12">
+            <AvatarFallback className="bg-secondary text-foreground">
+              <User className="h-5 w-5" />
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="text-sm font-medium">Пользователь</p>
+            <p className="text-[11px] text-muted-foreground">@username</p>
+          </div>
+        </motion.div>
+
+        {/* Subscription status */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="bg-card rounded-xl p-4 shadow-card"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground">Подписка</p>
+              <p className="text-sm font-medium">Базовая · 990 ₽/мес</p>
+            </div>
+            <StatusIndicator status="active" />
+          </div>
+          <div className="space-y-1.5 text-[12px] mb-3">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Следующее списание</span>
+              <span>15 марта 2026</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Способ оплаты</span>
+              <span>•••• 4242</span>
+            </div>
+          </div>
+          <div className="h-1 bg-muted rounded-full overflow-hidden mb-3">
+            <div className="h-full bg-foreground/30 rounded-full" style={{ width: "65%" }} />
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="flex-1 text-[11px] h-9">
+              Управлять
+            </Button>
+            <Button variant="ghost" size="sm" className="text-destructive text-[11px] h-9">
+              Отменить
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Menu items */}
+        <div className="space-y-1.5">
+          {[
+            { icon: CreditCard, label: "История платежей", to: "/dashboard/subscription" },
+            { icon: HelpCircle, label: "Поддержка", to: CONTACT_LINK, external: true },
+          ].map((item, i) => (
+            <motion.div
+              key={item.label}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.03 }}
             >
-              <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
-                <s.icon className="h-4.5 w-4.5 text-muted-foreground" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium">{s.label}</p>
-                <p className="text-xs text-muted-foreground truncate">{s.desc}</p>
-              </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </Link>
-          </motion.div>
-        ))}
-      </div>
+              {item.external ? (
+                <a
+                  href={item.to}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 bg-card rounded-xl p-3.5 shadow-card tap-highlight-none"
+                >
+                  <item.icon className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-[13px] flex-1">{item.label}</span>
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                </a>
+              ) : (
+                <Link
+                  to={item.to}
+                  className="flex items-center gap-3 bg-card rounded-xl p-3.5 shadow-card tap-highlight-none"
+                >
+                  <item.icon className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-[13px] flex-1">{item.label}</span>
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                </Link>
+              )}
+            </motion.div>
+          ))}
+        </div>
 
-      <Button variant="outline" className="w-full text-destructive border-destructive/20 hover:bg-destructive/5">
-        <LogOut className="h-4 w-4 mr-2" /> Выйти
-      </Button>
+        <Button variant="outline" size="sm" className="w-full text-destructive border-destructive/20 hover:bg-destructive/5 text-[11px] h-9">
+          <LogOut className="h-3.5 w-3.5 mr-1.5" /> Выйти
+        </Button>
+      </div>
     </div>
   );
 }
