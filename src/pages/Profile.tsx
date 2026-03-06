@@ -60,11 +60,11 @@ export default function Profile() {
             <div className="h-full bg-foreground/30 rounded-full" style={{ width: "65%" }} />
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="flex-1 text-[11px] h-9">
-              Управлять
+            <Button variant="outline" size="sm" className="flex-1 text-[11px] h-9" asChild>
+              <a href={TELEGRAM_LINK} target="_blank" rel="noopener noreferrer">Управлять</a>
             </Button>
-            <Button variant="ghost" size="sm" className="text-destructive text-[11px] h-9">
-              Отменить
+            <Button variant="ghost" size="sm" className="text-destructive text-[11px] h-9" asChild>
+              <a href={TELEGRAM_LINK} target="_blank" rel="noopener noreferrer">Отменить</a>
             </Button>
           </div>
         </motion.div>
