@@ -301,7 +301,7 @@ export default function Index() {
       {/* ═══ FINAL CTA ═══ */}
       <section id="join" className="px-5 py-14 md:py-20 border-t border-border mb-14 md:mb-0">
         <div className="max-w-[480px] mx-auto text-center">
-          <h2 className="text-xl md:text-2xl font-light lowercase tracking-tight mb-2">
+          <h2 className="text-xl md:text-2xl font-serif font-light lowercase tracking-tight mb-2">
             Готова присоединиться?
           </h2>
           <p className="text-[10px] text-muted-foreground mb-5">
