@@ -36,7 +36,7 @@ export default function Pricing() {
               Подписка на месяц
             </p>
             <div className="flex items-baseline justify-center gap-1 mb-1">
-              <span className="text-5xl font-serif tracking-tight">990 ₽</span>
+              <span className="text-5xl font-display font-bold tracking-tight">990 ₽</span>
             </div>
             <p className="text-[10px] text-muted-foreground mb-6">
               всегда 990 ₽/мес · отмена в любой момент

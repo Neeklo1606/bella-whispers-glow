@@ -120,10 +120,10 @@ export default function Index() {
               <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
                 Закрытый канал в Telegram о стиле
               </p>
-              <h1 className="text-[36px] md:text-6xl font-serif tracking-tight leading-[1.05] mb-3">
-                <span className="italic">Стильный</span> чат
+              <h1 className="text-[36px] md:text-6xl font-display font-bold tracking-tight leading-[1.05] mb-3">
+                Стильный чат
                 <br />
-                Беллы <span className="italic">Хасиас</span>
+                Беллы Хасиас
               </h1>
               <p className="text-[11px] md:text-[13px] tracking-[0.08em] text-muted-foreground">
                 Образы, капсулы и ссылки в одном месте
@@ -178,7 +178,7 @@ export default function Index() {
           <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-2">
             Подписка на месяц
           </p>
-          <p className="text-4xl md:text-5xl font-serif font-normal tracking-tight mb-1">
+          <p className="text-4xl md:text-5xl font-display font-bold tracking-tight mb-1">
             990 ₽
           </p>
           <p className="text-[10px] text-muted-foreground mb-1">
@@ -301,8 +301,8 @@ export default function Index() {
       {/* ═══ FINAL CTA ═══ */}
       <section id="join" className="px-5 py-14 md:py-20 border-t border-border mb-14 md:mb-0">
         <div className="max-w-[480px] mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl font-serif tracking-tight mb-2">
-            <span className="italic">Готова</span> присоединиться?
+          <h2 className="text-2xl md:text-3xl font-display font-bold tracking-tight mb-2">
+            Готова присоединиться?
           </h2>
           <p className="text-[10px] text-muted-foreground mb-5">
             Не откладывай свою лучшую версию на потом
