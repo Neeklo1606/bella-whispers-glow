@@ -120,7 +120,7 @@ export default function Index() {
               <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
                 Закрытый канал в Telegram о стиле
               </p>
-              <h1 className="text-[28px] md:text-5xl font-light uppercase tracking-tight leading-[1.1] mb-3">
+              <h1 className="text-[28px] md:text-5xl font-serif font-light tracking-tight leading-[1.1] mb-3">
                 Стильный чат
                 <br />
                 Беллы Хасиас
