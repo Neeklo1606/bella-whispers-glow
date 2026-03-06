@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import heroImage from "@/assets/hero-bella.jpg";
+import fashionImage from "@/assets/hero-fashion.jpg";
 
 const TELEGRAM_LINK = "https://t.me/bellahasias_bot";
 const CONTACT_LINK = "https://t.me/bellahasias";
@@ -227,8 +228,16 @@ export default function Index() {
       </section>
 
       {/* ═══ FOR WHOM — 3 compact cards ═══ */}
-      <section id="for-whom" className="px-5 py-12 md:py-16">
-        <div className="max-w-[600px] mx-auto">
+      <section id="for-whom" className="relative px-5 py-12 md:py-16 overflow-hidden">
+        {/* Background photo */}
+        <div className="absolute inset-0 opacity-[0.07]">
+          <img
+            src={fashionImage}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="relative max-w-[600px] mx-auto">
           <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-6">
             Для кого
           </p>
@@ -240,7 +249,7 @@ export default function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.06 }}
-                className="flex items-start gap-4 bg-card/60 backdrop-blur-sm p-5 rounded-lg"
+                className="flex items-start gap-4 bg-card/80 backdrop-blur-sm p-5 rounded-lg"
               >
                 <span className="text-lg font-extralight text-foreground/20 leading-none mt-0.5">
                   0{i + 1}
