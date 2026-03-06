@@ -201,7 +201,6 @@ export default function Index() {
           </motion.div>
         </div>
       </section>
-      </section>
 
       {/* ═══ PRICING — second screen ═══ */}
       <section className="px-5 py-10 md:py-14">
