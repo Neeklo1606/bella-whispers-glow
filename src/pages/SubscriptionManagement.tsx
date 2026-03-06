@@ -30,7 +30,7 @@ export default function SubscriptionManagement() {
           <StatusIndicator status="active" />
         </div>
         <div className="space-y-2 text-sm">
-          <div className="flex justify-between"><span className="text-muted-foreground">Стоимость</span><span className="font-medium">1 500₽/мес</span></div>
+          <div className="flex justify-between"><span className="text-muted-foreground">Стоимость</span><span className="font-medium">990₽/мес</span></div>
           <div className="flex justify-between"><span className="text-muted-foreground">Следующее списание</span><span className="font-medium">15 мар 2026</span></div>
           <div className="flex justify-between"><span className="text-muted-foreground">Способ оплаты</span><span className="font-medium">•••• 4242</span></div>
         </div>
