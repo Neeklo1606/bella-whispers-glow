@@ -14,8 +14,8 @@ import Profile from "./pages/Profile";
 import SubscriptionManagement from "./pages/SubscriptionManagement";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
-import { DashboardLayout } from "./components/layout/DashboardLayout";
 import { AdminLayout } from "./components/layout/AdminLayout";
+import { BottomNav } from "./components/layout/BottomNav";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,21 +28,19 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           {/* Marketing */}
-          <Route path="/" element={<Index />} />
-          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/" element={<><Index /><BottomNav /></>} />
+          <Route path="/pricing" element={<><Pricing /><BottomNav /></>} />
 
           {/* Auth */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/consent" element={<Consent />} />
+          <Route path="/login" element={<><Login /><BottomNav /></>} />
+          <Route path="/consent" element={<><Consent /><BottomNav /></>} />
 
-          {/* Dashboard */}
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="feed" element={<Feed />} />
-            <Route path="favorites" element={<Favorites />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="subscription" element={<SubscriptionManagement />} />
-          </Route>
+          {/* Dashboard pages — with bottom nav */}
+          <Route path="/dashboard" element={<><Dashboard /><BottomNav /></>} />
+          <Route path="/dashboard/feed" element={<><Feed /><BottomNav /></>} />
+          <Route path="/dashboard/favorites" element={<><Favorites /><BottomNav /></>} />
+          <Route path="/dashboard/profile" element={<><Profile /><BottomNav /></>} />
+          <Route path="/dashboard/subscription" element={<><SubscriptionManagement /><BottomNav /></>} />
 
           {/* Admin */}
           <Route path="/admin" element={<AdminLayout />}>
