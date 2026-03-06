@@ -178,7 +178,7 @@ export default function Index() {
           <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-2">
             Подписка на месяц
           </p>
-          <p className="text-3xl md:text-4xl font-serif font-extralight tracking-tight mb-1">
+          <p className="text-4xl md:text-5xl font-serif font-normal tracking-tight mb-1">
             990 ₽
           </p>
           <p className="text-[10px] text-muted-foreground mb-1">
