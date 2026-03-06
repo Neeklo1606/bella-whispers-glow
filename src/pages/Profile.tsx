@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { User, CreditCard, HelpCircle, LogOut, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const TELEGRAM_LINK = "https://t.me/bellahasias_bot";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { StatusIndicator } from "@/components/StatusIndicator";
 
