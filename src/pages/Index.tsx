@@ -137,67 +137,69 @@ export default function Index() {
       <Header />
 
       {/* ═══ HERO — fits one mobile screen ═══ */}
-      <section className="min-h-[100svh] flex flex-col justify-between pt-14 pb-6 px-5">
-        <div className="flex-1 flex flex-col justify-center max-w-[1100px] mx-auto w-full">
-          {/* Text */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-5"
-          >
-            <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
-              Закрытый канал в Telegram о стиле
-            </p>
-            <h1 className="text-[28px] md:text-4xl font-light uppercase tracking-tight leading-[1.1] mb-2">
-              Стильный чат
-              <br />
-              Беллы Хасиас
-            </h1>
-            <p className="text-[11px] tracking-[0.08em] text-muted-foreground">
-              Образы, капсулы и ссылки в одном месте
-            </p>
-          </motion.div>
-
-          {/* CTA */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col gap-2 mb-5"
-          >
-            <a
-              href={TELEGRAM_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full md:w-auto md:inline-block text-center px-8 py-3.5 bg-foreground text-background text-[10px] tracking-[0.18em] uppercase rounded-full hover:opacity-85 transition-opacity"
+      <section className="min-h-[100svh] flex flex-col justify-center pt-14 pb-6 px-5">
+        <div className="max-w-[1100px] mx-auto w-full flex flex-col md:flex-row md:items-center md:gap-16">
+          {/* Left — text + CTA */}
+          <div className="flex-1 flex flex-col justify-center md:max-w-[480px]">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-5"
             >
-              Вступить в чат
-            </a>
-            <button
-              onClick={() => document.querySelector("#for-whom")?.scrollIntoView({ behavior: "smooth" })}
-              className="text-[10px] tracking-[0.12em] text-muted-foreground hover:text-foreground transition-colors text-center py-1"
-            >
-              Смотреть программу месяца ↓
-            </button>
-          </motion.div>
+              <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
+                Закрытый канал в Telegram о стиле
+              </p>
+              <h1 className="text-[28px] md:text-5xl font-light uppercase tracking-tight leading-[1.1] mb-3">
+                Стильный чат
+                <br />
+                Беллы Хасиас
+              </h1>
+              <p className="text-[11px] md:text-[13px] tracking-[0.08em] text-muted-foreground">
+                Образы, капсулы и ссылки в одном месте
+              </p>
+            </motion.div>
 
-          {/* Photo */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="flex flex-col gap-2 mb-5 md:mb-0"
+            >
+              <a
+                href={TELEGRAM_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full md:w-auto md:inline-block text-center px-8 py-3.5 bg-foreground text-background text-[10px] tracking-[0.18em] uppercase rounded-full hover:opacity-85 transition-opacity"
+              >
+                Вступить в чат
+              </a>
+              <button
+                onClick={() => document.querySelector("#for-whom")?.scrollIntoView({ behavior: "smooth" })}
+                className="text-[10px] tracking-[0.12em] text-muted-foreground hover:text-foreground transition-colors text-center md:text-left py-1"
+              >
+                Смотреть программу месяца ↓
+              </button>
+            </motion.div>
+          </div>
+
+          {/* Right — photo */}
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.15 }}
-            className="w-full max-w-[420px] mx-auto md:mx-0"
+            className="w-full max-w-[420px] mx-auto md:mx-0 md:flex-1"
           >
             <img
               src={heroImage}
               alt="Bella Hasias"
-              className="w-full aspect-[4/3] object-cover object-top rounded-xl"
+              className="w-full aspect-[3/4] md:aspect-[3/4] object-cover object-top rounded-xl"
             />
             <p className="text-right mt-2 text-[9px] tracking-[0.18em] uppercase text-muted-foreground">
               Март 2026
             </p>
           </motion.div>
+        </div>
         </div>
       </section>
 
