@@ -69,6 +69,7 @@ function Header() {
             <div className="max-w-[1100px] mx-auto px-5 py-6 flex flex-col gap-3">
               {[
                 { label: "Что в чате?", href: "#what-inside" },
+                { label: "Цена", href: "#pricing" },
                 { label: "Вопросы", href: "#faq" },
               ].map((l) => (
                  <button
@@ -166,7 +167,7 @@ export default function Index() {
       </section>
 
       {/* ═══ PRICING — second screen ═══ */}
-      <section className="px-5 py-10 md:py-14">
+      <section id="pricing" className="px-5 py-10 md:py-14">
         <div className="max-w-[480px] mx-auto text-center">
           <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-2">
             Подписка на месяц
