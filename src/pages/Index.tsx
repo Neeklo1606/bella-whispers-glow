@@ -159,9 +159,6 @@ export default function Index() {
               alt="Bella Hasias"
               className="w-full aspect-[3/4] md:aspect-[3/4] object-cover object-top rounded-xl"
             />
-            <p className="text-right mt-2 text-[9px] tracking-[0.18em] uppercase text-muted-foreground">
-              Март 2026
-            </p>
           </motion.div>
         </div>
       </section>
