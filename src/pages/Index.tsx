@@ -141,12 +141,6 @@ export default function Index() {
               >
                 Вступить в чат
               </a>
-              <button
-                onClick={() => document.querySelector("#what-inside")?.scrollIntoView({ behavior: "smooth" })}
-                className="text-[10px] tracking-[0.12em] text-muted-foreground hover:text-foreground transition-colors text-center md:text-left py-1"
-              >
-                Смотреть программу месяца ↓
-              </button>
             </motion.div>
           </div>
 
