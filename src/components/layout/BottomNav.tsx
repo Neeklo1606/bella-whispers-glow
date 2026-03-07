@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { Home, CreditCard, User, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +11,13 @@ const navItems = [
 const TELEGRAM_LINK = "https://t.me/Bella_hasias";
 
 export function BottomNav() {
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+
+  const scrollTo = (id: string) => {
+    document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-md">
       <div className="flex items-center justify-around px-2 py-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))]">
