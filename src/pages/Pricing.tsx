@@ -35,9 +35,13 @@ export default function Pricing() {
             </p>
             <div className="flex items-baseline justify-center gap-1 mb-1">
               <span className="text-5xl font-display font-bold tracking-tight">990 ₽</span>
+              <span className="text-lg font-normal text-muted-foreground">— первый месяц</span>
             </div>
-            <p className="text-[10px] text-muted-foreground mb-6">
-              всегда 990 ₽/мес · отмена в любой момент
+            <p className="text-[10px] text-muted-foreground mb-1">
+              далее 1500 ₽/мес · отмена в любой момент
+            </p>
+            <p className="text-[10px] text-muted-foreground/70 mb-6">
+              Доступ к чату через Telegram‑бота, сразу после оплаты
             </p>
 
             <ul className="space-y-3 mb-6 text-left">
