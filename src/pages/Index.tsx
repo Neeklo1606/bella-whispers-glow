@@ -71,11 +71,13 @@ function Header() {
                 { label: "Что в чате?", href: "#what-inside" },
                 { label: "Вопросы", href: "#faq" },
               ].map((l) => (
-                <button
+                 <button
                   key={l.href}
                   onClick={() => {
                     setMenuOpen(false);
-                    document.querySelector(l.href)?.scrollIntoView({ behavior: "smooth" });
+                    setTimeout(() => {
+                      document.querySelector(l.href)?.scrollIntoView({ behavior: "smooth" });
+                    }, 250);
                   }}
                   className="text-xl font-light text-foreground hover:opacity-50 transition-opacity text-left"
                 >
