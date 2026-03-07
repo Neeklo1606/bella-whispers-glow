@@ -167,7 +167,7 @@ export default function Index() {
       </section>
 
       {/* ═══ PRICING — second screen ═══ */}
-      <section className="px-5 py-10 md:py-14">
+      <section id="pricing" className="px-5 py-10 md:py-14">
         <div className="max-w-[480px] mx-auto text-center">
           <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-2">
             Подписка на месяц
