@@ -170,13 +170,13 @@ export default function Index() {
             Подписка на месяц
           </p>
           <p className="text-4xl md:text-5xl font-display font-bold tracking-tight mb-1">
-            990 ₽
+            990 ₽ <span className="text-lg font-normal text-muted-foreground">— первый месяц</span>
           </p>
           <p className="text-[10px] text-muted-foreground mb-1">
-            всегда 990 ₽/мес · отмена в любой момент
+            далее 1500 ₽/мес · отмена в любой момент
           </p>
           <p className="text-[10px] text-muted-foreground/70 mb-5">
-            Оплата через Telegram‑бота, доступ сразу после оплаты
+            Доступ к чату через Telegram‑бота, сразу после оплаты
           </p>
           <a
             href={TELEGRAM_LINK}
