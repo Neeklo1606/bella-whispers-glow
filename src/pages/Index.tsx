@@ -6,17 +6,11 @@ import fashionImage from "@/assets/for-whom-bg.jpg";
 const TELEGRAM_LINK = "https://t.me/bellahasias_bot";
 const CONTACT_LINK = "https://t.me/Bella_hasias";
 
-const painPoints = [
-  "Полный гардероб, но нечего надеть",
-  "Хочешь выглядеть дороже, не увеличивая бюджет",
-  "Устаёшь выбирать, что надеть на работу и встречи",
-];
-
-const benefits = [
-  "Авторские обзоры с готовыми ссылками",
-  "Комьюнити, которое выбирает стиль как состояние",
-  "Экономия времени и денег на шопинге",
-  "Промокоды, которые отбивают стоимость подписки",
+const chatScreenshots: string[] = [
+  // TODO: replace with real screenshots
+  "/placeholder.svg",
+  "/placeholder.svg",
+  "/placeholder.svg",
 ];
 
 const faqItems = [
