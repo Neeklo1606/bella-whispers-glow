@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import heroImage from "@/assets/hero-bella.jpg";
-import fashionImage from "@/assets/for-whom-bg.jpg";
+import chatScreen1 from "@/assets/chat-screen-1.png";
+import chatScreen2 from "@/assets/chat-screen-2.png";
+import chatScreen3 from "@/assets/chat-screen-3.jpg";
+import chatScreen4 from "@/assets/chat-screen-4.jpg";
+import chatScreen5 from "@/assets/chat-screen-5.jpg";
+import chatScreen6 from "@/assets/chat-screen-6.jpg";
 
 const TELEGRAM_LINK = "https://t.me/bellahasias_bot";
 const CONTACT_LINK = "https://t.me/Bella_hasias";
 
-const chatScreenshots: string[] = [
-  // TODO: replace with real screenshots
-  "/placeholder.svg",
-  "/placeholder.svg",
-  "/placeholder.svg",
-];
+const chatScreenshots = [chatScreen1, chatScreen2, chatScreen3, chatScreen4, chatScreen5, chatScreen6];
 
 const faqItems = [
   { q: "Я ничего не понимаю в стиле. Мне подойдёт?", a: "Конечно! В чате есть разделы: inspo (вдохновение), тренды с подиумов, а также капсулы сочетаний образов и живые обзоры." },
