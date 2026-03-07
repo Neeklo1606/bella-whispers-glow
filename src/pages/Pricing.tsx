@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/button";
 const TELEGRAM_LINK = "https://t.me/bellahasias_bot";
 
 const features = [
-  "Полная библиотека контента",
-  "Доступ к комьюнити",
   "Ежемесячные капсулы",
   "Разборы трендов",
   "Персональные рекомендации",
