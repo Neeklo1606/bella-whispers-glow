@@ -192,60 +192,28 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ═══ FOR WHOM — 3 compact cards ═══ */}
-      <section id="for-whom" className="relative px-5 py-12 md:py-16 overflow-hidden">
-        {/* Background photo */}
-        <div className="absolute inset-0 opacity-[0.07]">
-          <img
-            src={fashionImage}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="relative max-w-[600px] mx-auto">
+      {/* ═══ WHAT'S INSIDE — chat screenshots ═══ */}
+      <section id="what-inside" className="px-5 py-12 md:py-16 border-t border-border">
+        <div className="max-w-[600px] mx-auto">
           <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-6">
-            Для кого
+            Что в чате?
           </p>
-          <div className="flex flex-col gap-3">
-            {painPoints.map((point, i) => (
+          <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+            {chatScreenshots.map((src, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
-                className="flex items-start gap-4 bg-card/80 backdrop-blur-sm p-5 rounded-lg"
+                transition={{ delay: i * 0.08 }}
+                className="shrink-0 w-[260px] snap-center"
               >
-                <span className="text-lg font-extralight text-foreground/20 leading-none mt-0.5">
-                  0{i + 1}
-                </span>
-                <p className="text-[11px] tracking-[0.08em] uppercase leading-[1.6] text-foreground">
-                  {point}
-                </p>
+                <img
+                  src={src}
+                  alt={`Скриншот из чата ${i + 1}`}
+                  className="w-full aspect-[9/16] object-cover rounded-lg bg-muted"
+                />
               </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ WHY CHOOSE — compact list ═══ */}
-      <section id="why" className="px-5 py-12 md:py-16 border-t border-border">
-        <div className="max-w-[600px] mx-auto">
-          <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-6">
-            Почему выбирают
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {benefits.map((b, i) => (
-              <motion.p
-                key={i}
-                initial={{ opacity: 0, y: 8 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="text-[11px] tracking-[0.06em] uppercase leading-[1.7] text-foreground"
-              >
-                {b}
-              </motion.p>
             ))}
           </div>
         </div>
