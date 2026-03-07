@@ -68,8 +68,7 @@ function Header() {
           >
             <div className="max-w-[1100px] mx-auto px-5 py-6 flex flex-col gap-3">
               {[
-                { label: "Для кого", href: "#for-whom" },
-                { label: "Почему выбирают", href: "#why" },
+                { label: "Что в чате?", href: "#what-inside" },
                 { label: "Вопросы", href: "#faq" },
               ].map((l) => (
                 <button
