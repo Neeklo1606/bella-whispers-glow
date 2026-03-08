@@ -94,6 +94,7 @@ class Subscription(BaseModel):
     payments = relationship(
         "Payment",
         back_populates="subscription",
+        foreign_keys="Payment.subscription_id",
         cascade="all, delete-orphan",
     )
     channel_access_logs = relationship(

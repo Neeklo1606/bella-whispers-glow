@@ -61,7 +61,11 @@ class Payment(BaseModel):
 
     # Relationships
     user = relationship("User", back_populates="payments")
-    subscription = relationship("Subscription", back_populates="payments")
+    subscription = relationship(
+        "Subscription",
+        back_populates="payments",
+        foreign_keys=[subscription_id],
+    )
 
     __table_args__ = (
         Index("idx_payments_user_id", "user_id"),
