@@ -1,0 +1,20 @@
+[Unit]
+Description=Bella Subscription Platform Telegram Bot
+After=network.target bella-backend.service
+Requires=bella-backend.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/bella/bot
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+Environment="PYTHONPATH=/var/www/bella/bot"
+ExecStart=/var/www/bella/bot/venv/bin/python -m src.main
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bella-bot
+
+[Install]
+WantedBy=multi-user.target

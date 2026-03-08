@@ -7,9 +7,9 @@ from pydantic_settings import BaseSettings
 class BotConfig(BaseSettings):
     """Bot configuration."""
 
-    BOT_TOKEN: str
+    BOT_TOKEN: str = ""
     API_BASE_URL: str = "http://localhost:8000"
-    CHANNEL_ID: str
+    CHANNEL_ID: str = ""
     BOT_API_SECRET: str = ""
 
     class Config:

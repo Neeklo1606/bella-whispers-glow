@@ -18,7 +18,11 @@ logger = logging.getLogger(__name__)
 async def main():
     """Main bot function."""
     config = get_bot_config()
-    
+    if not config.BOT_TOKEN:
+        logger.warning("BOT_TOKEN not set - waiting. Configure via admin panel.")
+        while True:
+            await asyncio.sleep(60)
+
     # Initialize bot and dispatcher
     bot = Bot(
         token=config.BOT_TOKEN,
