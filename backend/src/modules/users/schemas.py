@@ -1,7 +1,6 @@
 """Users module Pydantic schemas."""
-from pydantic import BaseModel, EmailStr
-from typing import Optional, Union
-from uuid import UUID
+from pydantic import BaseModel, EmailStr, field_validator
+from typing import Optional
 from datetime import datetime
 
 from .enums import UserRole
