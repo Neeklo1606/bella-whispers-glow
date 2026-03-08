@@ -57,7 +57,7 @@ class Payment(BaseModel):
     provider_payment_id = Column(String(255), nullable=True, unique=True, index=True)
     payment_url = Column(String(512), nullable=True)
     paid_at = Column(DateTime(timezone=True), nullable=True)
-    metadata = Column(JSON, nullable=True)
+    provider_metadata = Column("metadata", JSON, nullable=True)  # DB column 'metadata', attr renamed (reserved in SQLAlchemy)
 
     # Relationships
     user = relationship("User", back_populates="payments")
