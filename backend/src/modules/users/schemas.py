@@ -1,6 +1,7 @@
 """Users module Pydantic schemas."""
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, Union
+from uuid import UUID
 from datetime import datetime
 
 from .enums import UserRole
@@ -42,6 +43,11 @@ class UserUpdate(BaseModel):
 class UserResponse(BaseModel):
     """User response schema."""
     id: str
+
+    @field_validator("id", mode="before")
+    @classmethod
+    def coerce_id(cls, v):
+        return str(v) if v is not None else None
     telegram_id: Optional[int] = None
     username: Optional[str] = None
     first_name: Optional[str] = None
