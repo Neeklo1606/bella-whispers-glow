@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 from .repository import SubscriptionPlanRepository, SubscriptionRepository
 from .schemas import SubscriptionPlanResponse, SubscriptionResponse, SubscriptionBase
-from .models import SubscriptionStatus
+from .models import Subscription, SubscriptionStatus
 from ..telegram.bot_service import TelegramBotService
 from ..channel_logs.service import ChannelAccessLogService
 from ..channel_logs.models import ChannelAccessEventType
