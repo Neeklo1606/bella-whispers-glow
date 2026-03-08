@@ -7,7 +7,7 @@ import json
 from typing import Dict, Optional
 import httpx
 
-from ...core.config import settings
+from ....core.config import settings
 from .base import PaymentProvider
 
 
