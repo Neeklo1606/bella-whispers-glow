@@ -39,7 +39,7 @@ class Broadcast(BaseModel):
     scheduled_at = Column(DateTime(timezone=True), nullable=True, index=True)
     sent_at = Column(DateTime(timezone=True), nullable=True)
     status = Column(
-        Enum(BroadcastStatus),
+        Enum(BroadcastStatus, values_callable=lambda obj: [e.value for e in obj]),
         default=BroadcastStatus.DRAFT,
         nullable=False,
         index=True,

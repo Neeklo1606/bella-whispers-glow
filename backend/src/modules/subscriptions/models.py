@@ -72,7 +72,7 @@ class Subscription(BaseModel):
         index=True,
     )
     status = Column(
-        Enum(SubscriptionStatus),
+        Enum(SubscriptionStatus, values_callable=lambda obj: [e.value for e in obj]),
         default=SubscriptionStatus.PENDING,
         nullable=False,
         index=True,
