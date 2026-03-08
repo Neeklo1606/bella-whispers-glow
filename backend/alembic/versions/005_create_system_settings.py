@@ -19,7 +19,11 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Create system_settings table
+    # system_settings may already exist from 001_initial; create only if missing
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    if 'system_settings' in inspector.get_table_names():
+        return
     op.create_table(
         'system_settings',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()")),
