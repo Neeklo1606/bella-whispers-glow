@@ -1,6 +1,6 @@
 """Add telegram_invite_link fields to subscriptions table
 
-Revision ID: 003_add_subscription_telegram_fields
+Revision ID: 003_add_sub_telegram
 Revises: 002_add_user_fields
 Create Date: 2026-03-08 15:00:00.000000
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '003_add_subscription_telegram_fields'
+revision: str = '003_add_sub_telegram'
 down_revision: Union[str, None] = '002_add_user_fields'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
