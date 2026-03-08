@@ -60,7 +60,7 @@ async def get_current_user(
         User object
     """
     from uuid import UUID
-    from ..modules.users.repository import UserRepository
+    from ...modules.users.repository import UserRepository
     
     repository = UserRepository(db)
     user = await repository.get_by_id(UUID(user_id))
@@ -87,8 +87,8 @@ async def require_admin_user(
         HTTPException: If user is not admin (403)
     """
     from uuid import UUID
-    from ..modules.users.repository import UserRepository
-    from ..modules.users.enums import UserRole
+    from ...modules.users.repository import UserRepository
+    from ...modules.users.enums import UserRole
     
     repository = UserRepository(db)
     user = await repository.get_by_id(UUID(user_id))
