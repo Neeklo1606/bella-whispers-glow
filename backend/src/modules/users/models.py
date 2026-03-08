@@ -26,7 +26,7 @@ class User(BaseModel):
     password_hash = Column(String(255), nullable=True)
     
     role = Column(
-        Enum(UserRole),
+        Enum(UserRole, values_callable=lambda obj: [e.value for e in obj]),
         default=UserRole.USER,
         nullable=False,
         index=True,
