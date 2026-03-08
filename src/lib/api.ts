@@ -2,7 +2,9 @@
  * API utilities for admin and user authentication and requests.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (typeof window !== "undefined" ? window.location.origin : "http://localhost:8000");
 
 // Telegram WebApp types
 declare global {
