@@ -2,11 +2,11 @@
 Admin module API routes.
 All routes require admin authentication.
 """
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from typing import Dict, List
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from uuid import UUID
 
 from ...core.db import get_db
@@ -75,14 +75,23 @@ async def admin_dashboard(
     )
     revenue_total = float(revenue_total_result.scalar() or 0)
     
+    # Churn rate: (expired + cancelled) / total ever had subscription
+    total_subs_result = await db.execute(select(func.count(Subscription.id)))
+    total_subs = total_subs_result.scalar() or 0
+    churned_result = await db.execute(
+        select(func.count(Subscription.id)).where(
+            Subscription.status.in_([SubscriptionStatus.EXPIRED, SubscriptionStatus.CANCELLED])
+        )
+    )
+    churned = churned_result.scalar() or 0
+    churn_rate = round((churned / total_subs * 100), 2) if total_subs else 0.0
+    
     return {
-        "metrics": {
-            "total_users": total_users,
-            "active_subscriptions": active_subscriptions,
-            "payments_today": payments_today,
-            "revenue_today": revenue_today,
-            "revenue_total": revenue_total,
-        },
+        "users_count": total_users,
+        "active_subscriptions": active_subscriptions,
+        "revenue_today": revenue_today,
+        "revenue_total": revenue_total,
+        "churn_rate": churn_rate,
         "user": {
             "id": str(admin_user.id),
             "email": admin_user.email,
@@ -235,6 +244,98 @@ async def admin_ban_user(
     return {"success": True, "message": "User banned"}
 
 
+@router.get("/users/{user_id}/subscriptions")
+async def admin_get_user_subscriptions(
+    user_id: str,
+    admin_user: User = Depends(require_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get subscriptions for a user."""
+    subscription_repo = SubscriptionRepository(db)
+    subscriptions = await subscription_repo.get_all_by_user_id(UUID(user_id))
+    from ...modules.subscriptions.schemas import SubscriptionResponse
+    return [SubscriptionResponse.model_validate(s) for s in subscriptions]
+
+
+@router.post("/test/telegram")
+async def admin_test_telegram(
+    admin_user: User = Depends(require_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Test Telegram bot token and channel access."""
+    service = SystemSettingService(db)
+    settings = await service.get_settings()
+    s_token = settings.get("TELEGRAM_BOT_TOKEN")
+    token_val = str(s_token.value) if s_token and s_token.value else ""
+    s_channel = settings.get("TELEGRAM_CHANNEL_ID")
+    channel_val = str(s_channel.value) if s_channel and s_channel.value else ""
+    
+    if not token_val:
+        return {"ok": False, "error": "TELEGRAM_BOT_TOKEN is not set"}
+    
+    import httpx
+    try:
+        async with httpx.AsyncClient() as client:
+            r = await client.get(f"https://api.telegram.org/bot{token_val}/getMe", timeout=10)
+            data = r.json()
+            if not data.get("ok"):
+                return {"ok": False, "error": data.get("description", "Invalid bot token")}
+        
+        if channel_val:
+            async with httpx.AsyncClient() as client:
+                r2 = await client.get(
+                    f"https://api.telegram.org/bot{token_val}/getChat?chat_id={channel_val}",
+                    timeout=10
+                )
+                data2 = r2.json()
+                if not data2.get("ok"):
+                    return {"ok": True, "bot": data.get("result"), "channel": None, "channel_error": data2.get("description", "Channel access failed")}
+                return {"ok": True, "bot": data.get("result"), "channel": data2.get("result")}
+        
+        return {"ok": True, "bot": data.get("result"), "channel": None}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
+@router.post("/test/payment")
+async def admin_test_payment(
+    admin_user: User = Depends(require_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Test YooKassa payment configuration."""
+    service = SystemSettingService(db)
+    settings = await service.get_settings()
+    
+    def get_val(key: str) -> str:
+        s = settings.get(key)
+        if s and s.value is not None:
+            return str(s.value)
+        return ""
+    
+    shop_id = get_val("YOOKASSA_SHOP_ID")
+    secret = get_val("YOOKASSA_SECRET_KEY")
+    
+    if not shop_id or not secret:
+        return {"ok": False, "error": "YOOKASSA_SHOP_ID or YOOKASSA_SECRET_KEY is not set"}
+    
+    import httpx
+    import base64
+    try:
+        auth = base64.b64encode(f"{shop_id}:{secret}".encode()).decode()
+        async with httpx.AsyncClient() as client:
+            r = await client.post(
+                "https://api.yookassa.ru/v3/payments",
+                headers={"Authorization": f"Basic {auth}", "Idempotence-Key": str(UUID())},
+                json={"amount": {"value": "1.00", "currency": "RUB"}, "capture": True, "description": "Admin test"},
+                timeout=10
+            )
+            if r.status_code in (200, 201):
+                return {"ok": True, "message": "YooKassa configured and reachable"}
+            return {"ok": False, "error": r.text or f"HTTP {r.status_code}"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
 @router.get("/settings", response_model=Dict[str, SettingResponse])
 async def admin_get_settings(
     admin_user: User = Depends(require_admin_user),
@@ -246,7 +347,7 @@ async def admin_get_settings(
 
 
 # Critical security settings that cannot be modified at runtime
-_PROTECTED_SETTINGS = frozenset({"SECRET_KEY", "BOT_API_SECRET"})
+_PROTECTED_SETTINGS = frozenset({"SECRET_KEY"})
 
 
 @router.put("/settings/{key}", response_model=SettingResponse)

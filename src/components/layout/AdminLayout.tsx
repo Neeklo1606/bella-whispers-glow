@@ -1,17 +1,30 @@
-import { NavLink, Outlet } from "react-router-dom";
-import { BarChart3, Users, FileText, CreditCard, Megaphone, Settings, ArrowLeft } from "lucide-react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { BarChart3, Users, CreditCard, Settings, ArrowLeft, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { removeAdminToken } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 const adminNav = [
   { to: "/admin", icon: BarChart3, label: "Дашборд", end: true },
   { to: "/admin/users", icon: Users, label: "Пользователи" },
-  { to: "/admin/content", icon: FileText, label: "Контент" },
   { to: "/admin/subscriptions", icon: CreditCard, label: "Подписки" },
-  { to: "/admin/broadcasts", icon: Megaphone, label: "Рассылки" },
   { to: "/admin/settings", icon: Settings, label: "Настройки" },
 ];
 
 export function AdminLayout() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    removeAdminToken();
+    toast({
+      title: "Выход выполнен",
+      description: "Вы успешно вышли из админ-панели",
+    });
+    navigate("/admin/login");
+  };
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
@@ -37,13 +50,34 @@ export function AdminLayout() {
             {item.label}
           </NavLink>
         ))}
+        <div className="mt-auto pt-4 border-t border-border">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start text-muted-foreground hover:text-foreground"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4 mr-3" />
+            Выйти
+          </Button>
+        </div>
       </aside>
 
       {/* Mobile header */}
       <div className="flex-1 flex flex-col">
-        <header className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-border bg-card">
-          <NavLink to="/" className="text-muted-foreground"><ArrowLeft className="h-5 w-5" /></NavLink>
-          <h1 className="text-base font-semibold">Админ-панель</h1>
+        <header className="md:hidden flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-card">
+          <div className="flex items-center gap-3">
+            <NavLink to="/" className="text-muted-foreground"><ArrowLeft className="h-5 w-5" /></NavLink>
+            <h1 className="text-base font-semibold">Админ-панель</h1>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleLogout}
+            className="text-muted-foreground"
+          >
+            <LogOut className="h-5 w-5" />
+          </Button>
         </header>
 
         {/* Mobile nav */}

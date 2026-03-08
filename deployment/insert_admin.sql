@@ -1,0 +1,1 @@
+INSERT INTO users (id, email, password_hash, role, created_at, updated_at) VALUES ('3743ce3f-5d8d-4528-ad78-359a9c07e017', 'admin@bella.local', '$2b$12$oyRtJ91HoR.HNlk2EMm.V.ITmQh.ruyl1Pq5B183L12DybyM12XMy', 'super_admin', '2026-03-08 14:48:30', '2026-03-08 14:48:30');

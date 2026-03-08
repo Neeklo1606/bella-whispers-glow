@@ -11,7 +11,11 @@ import Profile from "./pages/Profile";
 import SubscriptionManagement from "./pages/SubscriptionManagement";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
+import AdminSubscriptions from "./pages/AdminSubscriptions";
+import AdminSettings from "./pages/AdminSettings";
+import AdminLogin from "./pages/AdminLogin";
 import { AdminLayout } from "./components/layout/AdminLayout";
+import { AdminGuard } from "./components/AdminGuard";
 import { BottomNav } from "./components/layout/BottomNav";
 import NotFound from "./pages/NotFound";
 
@@ -38,9 +42,19 @@ const App = () => (
           <Route path="/dashboard/feed" element={<Navigate to="/" replace />} />
           <Route path="/dashboard/favorites" element={<Navigate to="/dashboard/profile" replace />} />
 
-          <Route path="/admin" element={<AdminLayout />}>
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminGuard>
+                <AdminLayout />
+              </AdminGuard>
+            }
+          >
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
+            <Route path="subscriptions" element={<AdminSubscriptions />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />
