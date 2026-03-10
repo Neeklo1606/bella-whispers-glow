@@ -72,7 +72,7 @@ from .modules.broadcasts import router as broadcasts_router
 from .modules.schedule import router as schedule_router
 from .modules.system_settings import router as system_settings_router
 from .modules.admin import router as admin_router
-from .modules.bot_config import router as bot_config_router
+from .modules.bot_config.router import router as bot_config_router
 
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(users_router, prefix="/api/users", tags=["users"])
