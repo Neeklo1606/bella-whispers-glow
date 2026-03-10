@@ -87,9 +87,15 @@ if [ -d "$BACKEND_DIR" ]; then
     print_info "Step 2: Installing backend dependencies..."
     cd "$BACKEND_DIR"
     
+    if [ ! -d "venv" ]; then
+        print_info "Creating backend venv..."
+        /usr/bin/python3 -m venv venv
+    fi
+    PIP_CMD="./venv/bin/pip"
+    
     if [ -f "requirements.txt" ]; then
-        /usr/bin/python3 -m pip install --upgrade pip --quiet
-        /usr/bin/python3 -m pip install -r requirements.txt --quiet
+        $PIP_CMD install --upgrade pip --quiet
+        $PIP_CMD install -r requirements.txt --quiet
         print_success "Backend dependencies installed"
     else
         print_warning "requirements.txt not found in backend directory"
@@ -103,8 +109,11 @@ if [ -d "$BOT_DIR" ]; then
     print_info "Step 3: Installing bot dependencies..."
     cd "$BOT_DIR"
     
+    BOT_PIP="/usr/bin/python3 -m pip"
+    [ -f "venv/bin/pip" ] && BOT_PIP="./venv/bin/pip"
+    
     if [ -f "requirements.txt" ]; then
-        /usr/bin/python3 -m pip install -r requirements.txt --quiet
+        $BOT_PIP install -r requirements.txt --quiet
         print_success "Bot dependencies installed"
     else
         print_warning "requirements.txt not found in bot directory"
