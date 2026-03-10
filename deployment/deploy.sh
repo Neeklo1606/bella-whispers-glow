@@ -113,27 +113,28 @@ else
     print_warning "Bot directory not found: $BOT_DIR"
 fi
 
-# Step 4: Install miniapp dependencies and build
-if [ -d "$MINIAPP_DIR" ]; then
-    print_info "Step 4: Installing miniapp dependencies and building..."
-    cd "$MINIAPP_DIR"
-    
-    if [ -f "package.json" ]; then
-        npm install --silent
-        npm run build --silent
-        
-        # Validate build directory exists
-        if [ -d "dist" ]; then
-            print_success "MiniApp built successfully (dist directory exists)"
-        else
-            print_error "MiniApp build failed - dist directory not found"
-            exit 1
-        fi
+# Step 4: Install frontend dependencies and build (root project)
+print_info "Step 4: Installing frontend dependencies and building..."
+cd "$PROJECT_DIR"
+if [ -f "package.json" ] && [ -d "src" ]; then
+    npm install --silent
+    npm run build
+    if [ -d "dist" ]; then
+        print_success "Frontend built successfully (dist directory exists)"
     else
-        print_warning "package.json not found in miniapp directory"
+        print_error "Frontend build failed - dist directory not found"
+        exit 1
     fi
 else
-    print_warning "MiniApp directory not found: $MINIAPP_DIR"
+    # Fallback: miniapp if exists
+    if [ -d "$MINIAPP_DIR" ] && [ -f "$MINIAPP_DIR/package.json" ]; then
+        cd "$MINIAPP_DIR"
+        npm install --silent
+        npm run build --silent
+        [ -d "dist" ] && print_success "MiniApp built" || (print_error "MiniApp build failed"; exit 1)
+    else
+        print_warning "No frontend package.json found"
+    fi
 fi
 
 # Step 5: Run database migrations
@@ -141,15 +142,26 @@ if [ -d "$BACKEND_DIR" ]; then
     print_info "Step 5: Running database migrations..."
     cd "$BACKEND_DIR"
     
+    PYTHON_CMD="/usr/bin/python3"
+    [ -f "venv/bin/python" ] && PYTHON_CMD="./venv/bin/python"
+    
     if [ -f "alembic.ini" ]; then
-        /usr/bin/python3 -m alembic upgrade head
+        $PYTHON_CMD -m alembic upgrade head
         
         # Print current migration revision
-        CURRENT_REVISION=$(/usr/bin/python3 -m alembic current 2>/dev/null | awk '{print $1}' || echo "unknown")
+        CURRENT_REVISION=$($PYTHON_CMD -m alembic current 2>/dev/null | awk '{print $1}' || echo "unknown")
         print_success "Database migrations completed"
         print_info "Current migration revision: $CURRENT_REVISION"
     else
         print_warning "alembic.ini not found, skipping migrations"
+    fi
+    
+    # Step 5.5: Ensure admin user exists
+    print_info "Step 5.5: Ensuring admin user exists..."
+    if [ -f "scripts/ensure_admin.py" ]; then
+        $PYTHON_CMD scripts/ensure_admin.py && print_success "Admin user verified/created" || print_warning "ensure_admin.py failed (admin may already exist)"
+    else
+        print_warning "ensure_admin.py not found"
     fi
 else
     print_warning "Backend directory not found, skipping migrations"
