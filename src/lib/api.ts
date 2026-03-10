@@ -254,6 +254,40 @@ export async function testPayment(): Promise<TestPaymentResult> {
   });
 }
 
+/** MiniApp content from API (public, no auth) */
+export interface MiniappContent {
+  plans: Array<{
+    id: string;
+    name: string;
+    price: number;
+    first_month_price?: number;
+    duration_days: number;
+    currency: string;
+    features?: string[];
+    is_active: boolean;
+    [key: string]: unknown;
+  }>;
+  telegram_bot_link: string;
+  contact_link: string;
+  offer_url: string;
+  miniapp_url: string;
+  support_username: string;
+  price_note: string;
+  price_after: string;
+  plan_title: string;
+  features: string[];
+  faq_items: Array<{ q: string; a: string }>;
+}
+
+/** Get MiniApp content (public endpoint) */
+export async function getMiniappContent(): Promise<MiniappContent> {
+  const response = await fetch(`${API_BASE_URL}/api/miniapp/content`);
+  if (!response.ok) {
+    throw new Error("Не удалось загрузить контент");
+  }
+  return response.json();
+}
+
 /**
  * Make authenticated admin API request.
  */

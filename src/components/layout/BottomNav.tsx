@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { Home, CreditCard, User, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMiniappContent } from "@/hooks/useMiniappContent";
 
 const navItems = [
   { to: "/", icon: Home, label: "Главная" },
@@ -8,9 +9,9 @@ const navItems = [
   { to: "/dashboard/profile", icon: User, label: "Профиль" },
 ];
 
-const TELEGRAM_LINK = "https://t.me/Bella_hasias";
-
 export function BottomNav() {
+  const { data: content } = useMiniappContent();
+  const telegramLink = content?.telegram_bot_link ?? "https://t.me/bellahasias_bot";
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -38,7 +39,7 @@ export function BottomNav() {
           </NavLink>
         ))}
         <a
-          href={TELEGRAM_LINK}
+          href={telegramLink}
           target="_blank"
           rel="noopener noreferrer"
           className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl text-muted-foreground hover:text-foreground transition-colors tap-highlight-none min-w-[56px]"

@@ -1,15 +1,14 @@
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { User, CreditCard, HelpCircle, LogOut, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const TELEGRAM_LINK = "https://t.me/bellahasias_bot";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useMiniappContent } from "@/hooks/useMiniappContent";
 import { StatusIndicator } from "@/components/StatusIndicator";
 
-const CONTACT_LINK = "https://t.me/Bella_hasias";
-
 export default function Profile() {
+  const { data: content } = useMiniappContent();
+  const telegramLink = content?.telegram_bot_link ?? "https://t.me/bellahasias_bot";
+  const contactLink = content?.contact_link ?? "https://t.me/Bella_hasias";
   return (
     <div className="min-h-screen bg-background pb-20">
       <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
@@ -61,10 +60,10 @@ export default function Profile() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" className="flex-1 text-[11px] h-9" asChild>
-              <a href={TELEGRAM_LINK} target="_blank" rel="noopener noreferrer">Управлять</a>
+              <a href={telegramLink} target="_blank" rel="noopener noreferrer">Управлять</a>
             </Button>
             <Button variant="ghost" size="sm" className="text-destructive text-[11px] h-9" asChild>
-              <a href={TELEGRAM_LINK} target="_blank" rel="noopener noreferrer">Отменить</a>
+              <a href={telegramLink} target="_blank" rel="noopener noreferrer">Отменить</a>
             </Button>
           </div>
         </motion.div>
@@ -73,7 +72,7 @@ export default function Profile() {
         <div className="space-y-1.5">
           {[
             { icon: CreditCard, label: "История платежей", to: "/dashboard/subscription" },
-            { icon: HelpCircle, label: "Поддержка", to: CONTACT_LINK, external: true },
+            { icon: HelpCircle, label: "Поддержка", to: contactLink, external: true },
           ].map((item, i) => (
             <motion.div
               key={item.label}

@@ -7,24 +7,13 @@ import chatScreen3 from "@/assets/chat-screen-3.jpg";
 import chatScreen4 from "@/assets/chat-screen-4.jpg";
 import chatScreen5 from "@/assets/chat-screen-5.jpg";
 import chatScreen6 from "@/assets/chat-screen-6.jpg";
-
-const TELEGRAM_LINK = "https://t.me/bellahasias_bot";
-const CONTACT_LINK = "https://t.me/Bella_hasias";
+import { useMiniappContent } from "@/hooks/useMiniappContent";
 
 const chatScreenshots = [chatScreen1, chatScreen2, chatScreen3, chatScreen4, chatScreen5, chatScreen6];
 
-const faqItems = [
-  { q: "Я ничего не понимаю в стиле. Мне подойдёт?", a: "Конечно! В чате есть разделы: inspo (вдохновение), тренды с подиумов, а также капсулы сочетаний образов и живые обзоры." },
-  { q: "Зачем мне этот чат?", a: "Я создала этот чат как первое касание со стилистом, чтобы у каждого была возможность поработать со стилистом." },
-  { q: "Успею ли я, если много работаю?", a: "Все материалы доступны в записи. Вы смотрите и читаете в своём темпе." },
-  { q: "Что будет, если не продлю подписку?", a: "Доступ автоматически закроется. Вернуться можно в любой момент." },
-  { q: "Можно ли войти с середины месяца?", a: "Да, подписка действует 30 дней с момента оплаты." },
-  { q: "Материалы останутся со мной навсегда?", a: "Доступ к материалам активен пока действует подписка. После окончания доступ закрывается." },
-];
-
 /* ─── header ─── */
 
-function Header() {
+function Header({ contactLink }: { contactLink: string }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -48,7 +37,7 @@ function Header() {
           {menuOpen ? "Закрыть" : "Меню"}
         </button>
         <a
-          href={CONTACT_LINK}
+          href={contactLink}
           target="_blank"
           rel="noopener noreferrer"
           className="text-[10px] tracking-[0.2em] uppercase text-foreground hover:opacity-50 transition-opacity"
@@ -134,7 +123,7 @@ export default function Index() {
               className="flex flex-col gap-2 mb-5 md:mb-0"
             >
               <a
-                href={TELEGRAM_LINK}
+                href={telegramLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block w-full md:w-auto md:inline-block text-center px-8 py-3.5 bg-foreground text-background text-[10px] tracking-[0.18em] uppercase rounded-full hover:opacity-85 transition-opacity"
@@ -176,7 +165,7 @@ export default function Index() {
             Доступ к чату через Telegram‑бота, сразу после оплаты
           </p>
           <a
-            href={TELEGRAM_LINK}
+            href={telegramLink}
             target="_blank"
             rel="noopener noreferrer"
             className="block w-full py-3.5 bg-foreground text-background text-[10px] tracking-[0.18em] uppercase rounded-full hover:opacity-85 transition-opacity"
@@ -220,7 +209,7 @@ export default function Index() {
             Вопросы
           </p>
           <div className="divide-y divide-border">
-            {faqItems.map((item, i) => (
+            {(faqItems as Array<{ q: string; a: string }>).map((item, i) => (
               <div key={i}>
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
@@ -264,7 +253,7 @@ export default function Index() {
             Не откладывай свою лучшую версию на потом
           </p>
           <a
-            href={TELEGRAM_LINK}
+            href={telegramLink}
             target="_blank"
             rel="noopener noreferrer"
             className="block w-full py-3.5 bg-foreground text-background text-[10px] tracking-[0.18em] uppercase rounded-full hover:opacity-85 transition-opacity mb-3"
@@ -272,7 +261,7 @@ export default function Index() {
             Вступить в чат
           </a>
           <a
-            href={CONTACT_LINK}
+            href={contactLink}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"

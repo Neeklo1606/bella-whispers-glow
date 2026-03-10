@@ -73,6 +73,7 @@ from .modules.schedule import router as schedule_router
 from .modules.system_settings import router as system_settings_router
 from .modules.admin import router as admin_router
 from .modules.bot_config.router import router as bot_config_router
+from .modules.miniapp.router import router as miniapp_router
 
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(users_router, prefix="/api/users", tags=["users"])
@@ -84,6 +85,7 @@ app.include_router(schedule_router, prefix="/api/schedule", tags=["schedule"])
 app.include_router(system_settings_router, prefix="/api/settings", tags=["settings"])
 app.include_router(admin_router, prefix="/api/admin", tags=["admin"])
 app.include_router(bot_config_router, prefix="/api/bot", tags=["bot"])
+app.include_router(miniapp_router, prefix="/api/miniapp", tags=["miniapp"])
 
 
 @app.get("/")

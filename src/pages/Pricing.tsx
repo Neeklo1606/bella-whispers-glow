@@ -1,18 +1,20 @@
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Check, Shield, CreditCard } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
-const TELEGRAM_LINK = "https://t.me/bellahasias_bot";
-
-const features = [
-  "Ежемесячные капсулы",
-  "Разборы трендов",
-  "Персональные рекомендации",
-  "Промокоды и находки",
-];
+import { useMiniappContent } from "@/hooks/useMiniappContent";
 
 export default function Pricing() {
+  const { data: content, isLoading } = useMiniappContent();
+  const telegramLink = content?.telegram_bot_link ?? "https://t.me/bellahasias_bot";
+  const planTitle = content?.plan_title ?? "Подписка на месяц";
+  const priceNote = content?.price_note ?? "далее 1500 ₽/мес · отмена в любой момент";
+  const features = content?.features ?? [
+    "Ежемесячные капсулы",
+    "Разборы трендов",
+    "Персональные рекомендации",
+    "Промокоды и находки",
+  ];
+  const plan = content?.plans?.[0];
+  const price = plan?.first_month_price ?? plan?.price ?? 990;
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
@@ -31,21 +33,23 @@ export default function Pricing() {
           {/* Single plan card */}
           <div className="bg-card rounded-2xl p-6 shadow-card text-center mb-6">
             <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-1">
-              Подписка на месяц
+              {planTitle}
             </p>
             <div className="flex items-baseline justify-center gap-1 mb-1">
-              <span className="text-5xl font-display font-bold tracking-tight">990 ₽</span>
+              <span className="text-5xl font-display font-bold tracking-tight">
+                {isLoading ? "..." : `${price} ₽`}
+              </span>
               <span className="text-lg font-normal text-muted-foreground">— первый месяц</span>
             </div>
             <p className="text-[10px] text-muted-foreground mb-1">
-              далее 1500 ₽/мес · отмена в любой момент
+              {priceNote}
             </p>
             <p className="text-[10px] text-muted-foreground/70 mb-6">
               Доступ к чату через Telegram‑бота, сразу после оплаты
             </p>
 
             <ul className="space-y-3 mb-6 text-left">
-              {features.map((f) => (
+              {features.map((f: string) => (
                 <li key={f} className="flex items-start gap-2.5 text-[12px]">
                   <Check className="h-3.5 w-3.5 text-foreground/40 mt-0.5 shrink-0" />
                   <span>{f}</span>
@@ -54,7 +58,7 @@ export default function Pricing() {
             </ul>
 
             <a
-              href={TELEGRAM_LINK}
+              href={telegramLink}
               target="_blank"
               rel="noopener noreferrer"
               className="block w-full py-3.5 bg-foreground text-background text-[10px] tracking-[0.18em] uppercase rounded-full hover:opacity-85 transition-opacity"
