@@ -65,7 +65,7 @@ async def main():
             await engine.dispose()
             return
 
-        pw_hash = bcrypt.hashpw(ADMIN_PASSWORD.encode(), bcrypt.gensalt()).decode()
+        pw_hash = _hash_pw(ADMIN_PASSWORD)
         uid = str(uuid.uuid4())
         now = datetime.now(timezone.utc)
 
