@@ -18,6 +18,44 @@ from ..system_settings.service import SystemSettingService
 router = APIRouter()
 
 
+class RegisterUserRequest(BaseModel):
+    """Register or update bot user in DB."""
+    telegram_id: int
+    username: str = ""
+    first_name: str = ""
+    last_name: str = ""
+
+
+@router.post("/register-user")
+async def register_bot_user(
+    data: RegisterUserRequest,
+    _: str = Depends(verify_bot_secret),
+    db: AsyncSession = Depends(get_db),
+):
+    """Save bot user to DB (get or create). Called when user interacts with bot."""
+    from ..users.enums import UserRole
+
+    user_repo = UserRepository(db)
+    user = await user_repo.get_by_telegram_id(data.telegram_id)
+    if user:
+        await user_repo.update(user.id, {
+            "username": data.username or None,
+            "first_name": data.first_name or None,
+            "last_name": data.last_name or None,
+        })
+        await db.refresh(user)
+        return {"user_id": str(user.id), "created": False}
+    user = await user_repo.create({
+        "telegram_id": data.telegram_id,
+        "username": data.username or None,
+        "first_name": data.first_name or None,
+        "last_name": data.last_name or None,
+        "role": UserRole.USER,
+    })
+    await db.flush()
+    return {"user_id": str(user.id), "created": True}
+
+
 class CreatePaymentRequest(BaseModel):
     """Request to create payment from bot."""
     telegram_id: int

@@ -74,6 +74,32 @@ class APIClient:
             return response.json()
         return None
 
+    async def register_user(
+        self,
+        telegram_id: int,
+        username: str = "",
+        first_name: str = "",
+        last_name: str = "",
+    ) -> bool:
+        """POST /api/bot/register-user - save bot user to DB."""
+        headers = {"Content-Type": "application/json"}
+        if self.config.BOT_API_SECRET:
+            headers["X-Bot-Secret"] = self.config.BOT_API_SECRET
+        try:
+            response = await self.client.post(
+                "/api/bot/register-user",
+                json={
+                    "telegram_id": telegram_id,
+                    "username": username,
+                    "first_name": first_name,
+                    "last_name": last_name,
+                },
+                headers=headers,
+            )
+            return response.status_code == 200
+        except Exception:
+            return False
+
     async def get_plans(self) -> list[Dict[str, Any]]:
         """GET /api/subscriptions/plans - list active plans (no auth)."""
         response = await self.client.get("/api/subscriptions/plans")
