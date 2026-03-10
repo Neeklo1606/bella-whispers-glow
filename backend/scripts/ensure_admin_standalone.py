@@ -8,7 +8,7 @@ import os
 import sys
 import uuid
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Load .env
 backend_dir = Path(__file__).resolve().parent.parent
@@ -65,7 +65,7 @@ async def main():
             await engine.dispose()
             return
 
-        pw_hash = _pwd.hash(ADMIN_PASSWORD)
+        pw_hash = bcrypt.hashpw(ADMIN_PASSWORD.encode(), bcrypt.gensalt()).decode()
         uid = str(uuid.uuid4())
         now = datetime.now(timezone.utc)
 
