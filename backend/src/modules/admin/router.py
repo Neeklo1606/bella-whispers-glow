@@ -261,21 +261,26 @@ async def admin_get_user_subscriptions(
     return [SubscriptionResponse.model_validate(s) for s in subscriptions]
 
 
+_DEFAULT_BOT_TOKEN = "8716981874:AAE2hzfIx8Gk0syIGwmp0ZzP36TRO9CtR8g"
+_DEFAULT_CHANNEL_ID = "-1003802293810"
+
+
 @router.post("/test/telegram")
 async def admin_test_telegram(
     admin_user: User = Depends(require_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Test Telegram bot token and channel access."""
+    """Test Telegram bot token and channel access. Uses defaults if not set."""
     service = SystemSettingService(db)
     settings = await service.get_settings()
     s_token = settings.get("TELEGRAM_BOT_TOKEN")
-    token_val = str(s_token.value) if s_token and s_token.value else ""
-    s_channel = settings.get("TELEGRAM_CHANNEL_ID")
-    channel_val = str(s_channel.value) if s_channel and s_channel.value else ""
-    
+    token_val = str(s_token.value).strip() if s_token and s_token.value else ""
     if not token_val:
-        return {"ok": False, "error": "TELEGRAM_BOT_TOKEN is not set"}
+        token_val = _DEFAULT_BOT_TOKEN
+    s_channel = settings.get("TELEGRAM_CHANNEL_ID")
+    channel_val = str(s_channel.value).strip() if s_channel and s_channel.value else ""
+    if not channel_val:
+        channel_val = _DEFAULT_CHANNEL_ID
     
     import httpx
     try:

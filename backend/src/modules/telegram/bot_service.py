@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 # Setting keys for database lookup
 TELEGRAM_BOT_TOKEN_KEY = "TELEGRAM_BOT_TOKEN"
 TELEGRAM_CHANNEL_ID_KEY = "TELEGRAM_CHANNEL_ID"
+_DEFAULT_BOT_TOKEN = "8716981874:AAE2hzfIx8Gk0syIGwmp0ZzP36TRO9CtR8g"
+_DEFAULT_CHANNEL_ID = "-1003802293810"
 
 # Module-level cache: bot instance is reused until token changes
 _cached_token: Optional[str] = None
@@ -50,9 +52,9 @@ class TelegramBotService:
         channel_id = await setting_service.get(TELEGRAM_CHANNEL_ID_KEY)
 
         if not token:
-            token = settings.TELEGRAM_BOT_TOKEN
+            token = settings.TELEGRAM_BOT_TOKEN or _DEFAULT_BOT_TOKEN
         if not channel_id:
-            channel_id = settings.TELEGRAM_CHANNEL_ID
+            channel_id = settings.TELEGRAM_CHANNEL_ID or _DEFAULT_CHANNEL_ID
 
         async with _cache_lock:
             if _cached_token == token and _cached_bot is not None:

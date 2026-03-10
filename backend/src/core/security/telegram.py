@@ -29,16 +29,21 @@ def parse_init_data(init_data: str) -> Dict[str, str]:
     return parsed
 
 
+_DEFAULT_BOT_TOKEN = "8716981874:AAE2hzfIx8Gk0syIGwmp0ZzP36TRO9CtR8g"
+
+
 async def get_telegram_bot_token(db: AsyncSession) -> str:
     """
-    Get TELEGRAM_BOT_TOKEN from system_settings, fallback to .env.
+    Get TELEGRAM_BOT_TOKEN from system_settings, fallback to .env, then default.
     """
     from ...modules.system_settings.service import SystemSettingService
     service = SystemSettingService(db)
     token = await service.get("TELEGRAM_BOT_TOKEN")
     if token and token.strip():
         return token.strip()
-    return settings.TELEGRAM_BOT_TOKEN or ""
+    if settings.TELEGRAM_BOT_TOKEN and settings.TELEGRAM_BOT_TOKEN.strip():
+        return settings.TELEGRAM_BOT_TOKEN.strip()
+    return _DEFAULT_BOT_TOKEN
 
 
 def _verify_telegram_init_data_with_token(init_data: str, bot_token: str) -> bool:
