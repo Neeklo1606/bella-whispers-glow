@@ -492,7 +492,12 @@ async def admin_test_payment(
             r = await client.post(
                 "https://api.yookassa.ru/v3/payments",
                 headers={"Authorization": f"Basic {auth}", "Idempotence-Key": str(uuid.uuid4())},
-                json={"amount": {"value": "1.00", "currency": "RUB"}, "capture": True, "description": "Admin test"},
+                json={
+                    "amount": {"value": "1.00", "currency": "RUB"},
+                    "capture": True,
+                    "description": "Admin test",
+                    "confirmation": {"type": "redirect", "return_url": "https://app.bellahasias.ru/admin/settings"},
+                },
                 timeout=10
             )
             if r.status_code in (200, 201):
