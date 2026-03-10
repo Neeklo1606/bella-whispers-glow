@@ -12,13 +12,17 @@ from ....core.config import settings
 from .base import PaymentProvider
 
 
+_DEFAULT_SHOP_ID = "1294766"
+_DEFAULT_SECRET_KEY = "live_dARehpUSwWdmqXUV9q5NNI_ys_hdVqdBzTujqkBfk6U"
+
+
 class YooKassaProvider(PaymentProvider):
     """YooKassa payment provider."""
 
     def __init__(self, shop_id: str = "", secret_key: str = ""):
-        """Accept shop_id/secret_key from caller (system_settings); fallback to .env."""
-        self.shop_id = (shop_id or "").strip() or settings.YOOKASSA_SHOP_ID
-        self.secret_key = (secret_key or "").strip() or settings.YOOKASSA_SECRET_KEY
+        """shop_id/secret from caller (system_settings) -> env -> hardcoded defaults."""
+        self.shop_id = (shop_id or "").strip() or (settings.YOOKASSA_SHOP_ID or "").strip() or _DEFAULT_SHOP_ID
+        self.secret_key = (secret_key or "").strip() or (settings.YOOKASSA_SECRET_KEY or "").strip() or _DEFAULT_SECRET_KEY
         self.test_mode = settings.YOOKASSA_TEST_MODE
         self.base_url = (
             "https://api.yookassa.ru/v3"

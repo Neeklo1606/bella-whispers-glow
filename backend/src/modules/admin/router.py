@@ -411,6 +411,8 @@ async def admin_get_user_subscriptions(
 
 _DEFAULT_BOT_TOKEN = "8716981874:AAE2hzfIx8Gk0syIGwmp0ZzP36TRO9CtR8g"
 _DEFAULT_CHANNEL_ID = "-1003802293810"
+_DEFAULT_YOOKASSA_SHOP_ID = "1294766"
+_DEFAULT_YOOKASSA_SECRET_KEY = "live_dARehpUSwWdmqXUV9q5NNI_ys_hdVqdBzTujqkBfk6U"
 
 
 @router.post("/test/telegram")
@@ -459,7 +461,7 @@ async def admin_test_payment(
     admin_user: User = Depends(require_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Test YooKassa payment configuration. Uses system_settings, fallback to env."""
+    """Test YooKassa. Order: system_settings -> env -> hardcoded defaults."""
     from ...core.config import settings as app_settings
     service = SystemSettingService(db)
     db_settings = await service.get_settings()
@@ -471,16 +473,15 @@ async def admin_test_payment(
             if v:
                 return v
         if key == "YOOKASSA_SHOP_ID":
-            return (app_settings.YOOKASSA_SHOP_ID or "").strip()
+            v = (app_settings.YOOKASSA_SHOP_ID or "").strip()
+            return v or _DEFAULT_YOOKASSA_SHOP_ID
         if key == "YOOKASSA_SECRET_KEY":
-            return (app_settings.YOOKASSA_SECRET_KEY or "").strip()
+            v = (app_settings.YOOKASSA_SECRET_KEY or "").strip()
+            return v or _DEFAULT_YOOKASSA_SECRET_KEY
         return ""
 
     shop_id = get_val("YOOKASSA_SHOP_ID")
     secret = get_val("YOOKASSA_SECRET_KEY")
-
-    if not shop_id or not secret:
-        return {"ok": False, "error": "YOOKASSA_SHOP_ID or YOOKASSA_SECRET_KEY is not set"}
     
     import httpx
     import base64
