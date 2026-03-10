@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from .core.config import settings
-from .core.db import init_db, close_db
+from .core.db import init_db, close_db, AsyncSessionLocal
 from .core.utils import redis_client
 from .workers.scheduler import create_scheduler, start_scheduler, shutdown_scheduler
 
