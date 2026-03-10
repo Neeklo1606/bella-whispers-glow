@@ -17,6 +17,10 @@ async def lifespan(app: FastAPI):
     """Application lifespan events."""
     # Startup
     await init_db()
+    from .modules.system_settings.bootstrap import ensure_default_settings
+    async with AsyncSessionLocal() as db:
+        await ensure_default_settings(db)
+        await db.commit()
     await redis_client.init_cache()
     await redis_client.init_jobs()
     

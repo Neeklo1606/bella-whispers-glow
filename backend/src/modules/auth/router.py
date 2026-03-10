@@ -39,6 +39,7 @@ async def authenticate_telegram(
         HTTPException: If authentication fails
     """
     from ...core.security.telegram import (
+        get_telegram_bot_token,
         verify_telegram_init_data,
         extract_user_data,
     )
@@ -47,8 +48,9 @@ async def authenticate_telegram(
     from ...core.security import create_access_token
     from ...modules.users.schemas import UserResponse
     
-    # Verify Telegram signature
-    if not verify_telegram_init_data(request.initData):
+    # Verify Telegram signature (token from system_settings, fallback .env)
+    bot_token = await get_telegram_bot_token(db)
+    if not verify_telegram_init_data(request.initData, bot_token):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid Telegram initData signature",

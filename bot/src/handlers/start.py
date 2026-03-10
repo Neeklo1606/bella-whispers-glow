@@ -1,23 +1,23 @@
 """
 Start command handler.
 """
-from aiogram import Dispatcher, F
+from aiogram import Dispatcher
 from aiogram.filters import Command
 from aiogram.types import Message
 
-# TODO: Implement handlers
-# from ..services.api_client import APIClient
+from ..keyboards.main_menu import get_main_menu_keyboard
 
 
 async def cmd_start(message: Message):
-    """Handle /start command."""
-    # TODO: Implement
-    await message.answer("Добро пожаловать!")
+    """Handle /start command. Main menu: Тарифы, Подписка, Договор оферты, Обратная связь."""
+    await message.answer(
+        "Добро пожаловать! Выберите действие:",
+        reply_markup=get_main_menu_keyboard(),
+    )
 
 
 async def cmd_help(message: Message):
     """Handle /help command."""
-    # TODO: Implement
     await message.answer("Помощь")
 
 

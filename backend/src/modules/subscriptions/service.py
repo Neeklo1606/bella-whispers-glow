@@ -5,6 +5,7 @@ from uuid import UUID
 from datetime import datetime, timedelta
 
 from .repository import SubscriptionPlanRepository, SubscriptionRepository
+from ..users.repository import UserRepository
 from .schemas import SubscriptionPlanResponse, SubscriptionResponse, SubscriptionBase
 from .models import Subscription, SubscriptionStatus
 from ..telegram.bot_service import TelegramBotService
@@ -31,7 +32,20 @@ class SubscriptionService:
     async def get_plans(self) -> List[SubscriptionPlanResponse]:
         """Get all active subscription plans."""
         plans = await self.plan_repository.get_all_active()
-        return [SubscriptionPlanResponse.model_validate(plan) for plan in plans]
+        return [
+            SubscriptionPlanResponse(
+                id=str(p.id),
+                name=p.name,
+                description=p.description,
+                price=float(p.price),
+                first_month_price=float(p.first_month_price) if p.first_month_price else None,
+                duration_days=p.duration_days,
+                features=list(p.features) if p.features else [],
+                is_active=p.is_active,
+                created_at=p.created_at,
+            )
+            for p in plans
+        ]
 
     async def get_user_subscription(
         self, user_id: str
@@ -169,12 +183,59 @@ class SubscriptionService:
         self, user_id: str, subscription_data: SubscriptionBase
     ) -> SubscriptionResponse:
         """Create new subscription."""
-        # TODO: Implement
-        pass
+        plan = await self.plan_repository.get_by_id(UUID(subscription_data.plan_id))
+        if not plan:
+            raise ValueError("Plan not found")
+
+        start_date = datetime.utcnow()
+        end_date = start_date + timedelta(days=plan.duration_days)
+
+        subscription = await self.subscription_repository.create({
+            "user_id": UUID(user_id),
+            "plan_id": plan.id,
+            "status": SubscriptionStatus.ACTIVE,
+            "start_date": start_date,
+            "end_date": end_date,
+            "auto_renew": subscription_data.auto_renew,
+        })
+
+        await self._grant_channel_access(subscription)
+        await self.db.refresh(subscription)
+        return SubscriptionResponse.model_validate(subscription)
 
     async def cancel_subscription(
         self, user_id: str, subscription_id: str
     ) -> Optional[SubscriptionResponse]:
         """Cancel subscription."""
-        # TODO: Implement
-        pass
+        if subscription_id:
+            subscription = await self.subscription_repository.get_by_id(
+                UUID(subscription_id)
+            )
+        else:
+            subscription = await self.subscription_repository.get_active_by_user_id(
+                UUID(user_id)
+            )
+        if not subscription:
+            return None
+
+        await self.subscription_repository.update(
+            subscription.id,
+            {
+                "status": SubscriptionStatus.CANCELLED,
+                "cancelled_at": datetime.utcnow(),
+            },
+        )
+        await self.db.refresh(subscription)
+
+        user_repo = UserRepository(self.db)
+        user = await user_repo.get_by_id(subscription.user_id)
+        if user and user.telegram_id:
+            bot_service = await self._get_bot_service()
+            await bot_service.remove_chat_member(user.telegram_id)
+            try:
+                await bot_service.close()
+            except Exception:
+                pass
+
+        await self.db.refresh(subscription)
+        return SubscriptionResponse.model_validate(subscription)

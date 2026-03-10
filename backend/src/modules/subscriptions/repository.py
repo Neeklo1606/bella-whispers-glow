@@ -14,12 +14,50 @@ class SubscriptionPlanRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
+    async def get_by_id(self, plan_id: UUID) -> Optional[SubscriptionPlan]:
+        """Get subscription plan by ID."""
+        result = await self.db.execute(
+            select(SubscriptionPlan).where(SubscriptionPlan.id == plan_id)
+        )
+        return result.scalar_one_or_none()
+
     async def get_all_active(self) -> List[SubscriptionPlan]:
         """Get all active subscription plans."""
         result = await self.db.execute(
             select(SubscriptionPlan).where(SubscriptionPlan.is_active == True)
         )
         return list(result.scalars().all())
+
+    async def create(self, plan_data: dict) -> SubscriptionPlan:
+        """Create new subscription plan."""
+        plan = SubscriptionPlan(**plan_data)
+        self.db.add(plan)
+        await self.db.flush()
+        await self.db.refresh(plan)
+        return plan
+
+    async def update(
+        self, plan_id: UUID, update_data: dict
+    ) -> Optional[SubscriptionPlan]:
+        """Update subscription plan."""
+        plan = await self.get_by_id(plan_id)
+        if not plan:
+            return None
+        for key, value in update_data.items():
+            if value is not None:
+                setattr(plan, key, value)
+        await self.db.flush()
+        await self.db.refresh(plan)
+        return plan
+
+    async def delete(self, plan_id: UUID) -> bool:
+        """Delete subscription plan."""
+        plan = await self.get_by_id(plan_id)
+        if not plan:
+            return False
+        await self.db.delete(plan)
+        await self.db.flush()
+        return True
 
 
 class SubscriptionRepository:
@@ -91,3 +129,12 @@ class SubscriptionRepository:
         await self.db.flush()
         await self.db.refresh(subscription)
         return subscription
+
+    async def delete(self, subscription_id: UUID) -> bool:
+        """Delete subscription."""
+        subscription = await self.get_by_id(subscription_id)
+        if not subscription:
+            return False
+        await self.db.delete(subscription)
+        await self.db.flush()
+        return True

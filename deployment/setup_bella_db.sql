@@ -1,0 +1,5 @@
+CREATE USER bella WITH PASSWORD 'bella';
+CREATE DATABASE bella OWNER bella;
+GRANT ALL PRIVILEGES ON DATABASE bella TO bella;
+\c bella
+GRANT ALL ON SCHEMA public TO bella;

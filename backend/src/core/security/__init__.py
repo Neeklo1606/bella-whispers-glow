@@ -13,6 +13,7 @@ from .dependencies import (
     security,
 )
 from .telegram import (
+    get_telegram_bot_token,
     verify_telegram_init_data,
     extract_user_data,
     parse_init_data,
@@ -28,6 +29,7 @@ __all__ = [
     "get_current_user",
     "require_admin_user",
     "security",
+    "get_telegram_bot_token",
     "verify_telegram_init_data",
     "extract_user_data",
     "parse_init_data",

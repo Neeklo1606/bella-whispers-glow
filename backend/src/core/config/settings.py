@@ -41,9 +41,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
-    # Telegram
-    TELEGRAM_BOT_TOKEN: str
-    TELEGRAM_CHANNEL_ID: str
+    # Telegram (bootstrap only; runtime from system_settings)
+    TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_CHANNEL_ID: str = ""
     TELEGRAM_WEBHOOK_URL: str = ""
     BOT_API_SECRET: str = ""
 

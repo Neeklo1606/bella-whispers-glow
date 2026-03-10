@@ -1,11 +1,38 @@
 """System settings module service."""
-import json
+import time
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple
 
 from .repository import SystemSettingRepository
 from .models import SystemSetting
 from .schemas import SettingResponse, SettingUpdate
+
+# Simple in-memory cache: key -> (value, expiry_timestamp)
+# TTL 60 seconds
+_SETTINGS_CACHE: Dict[str, Tuple[str, float]] = {}
+_CACHE_TTL_SECONDS = 60
+
+
+def _cache_get(key: str) -> Optional[str]:
+    """Get from cache if not expired."""
+    entry = _SETTINGS_CACHE.get(key)
+    if not entry:
+        return None
+    value, expiry = entry
+    if time.monotonic() > expiry:
+        del _SETTINGS_CACHE[key]
+        return None
+    return value
+
+
+def _cache_set(key: str, value: str) -> None:
+    """Store in cache with TTL."""
+    _SETTINGS_CACHE[key] = (value, time.monotonic() + _CACHE_TTL_SECONDS)
+
+
+def _cache_invalidate(key: str) -> None:
+    """Invalidate cache for key (on update/delete)."""
+    _SETTINGS_CACHE.pop(key, None)
 
 
 class SystemSettingService:
@@ -16,7 +43,7 @@ class SystemSettingService:
 
     async def get(self, key: str) -> Optional[str]:
         """
-        Get system setting value by key.
+        Get system setting value by key. Cached 60 seconds.
         
         Args:
             key: Setting key
@@ -24,9 +51,14 @@ class SystemSettingService:
         Returns:
             Setting value or None if not found
         """
+        cached = _cache_get(key)
+        if cached is not None:
+            return cached
         setting = await self.repository.get_by_key(key)
         if setting:
-            return setting.value
+            val = setting.value or ""
+            _cache_set(key, val)
+            return val
         return None
 
     async def set(self, key: str, value: str, description: Optional[str] = None) -> SystemSetting:
@@ -97,6 +129,7 @@ class SystemSettingService:
         Returns:
             True if deleted, False if not found
         """
+        _cache_invalidate(key)
         return await self.repository.delete_by_key(key)
 
     async def get_settings(self) -> Dict[str, SettingResponse]:
@@ -125,22 +158,19 @@ class SystemSettingService:
     async def update_setting(self, key: str, setting_data: SettingUpdate) -> SettingResponse:
         """
         Update setting by key. Creates if not exists.
-        Supports value as str, int, bool, dict, list.
+        Supports value as str, int, bool, dict, list. Passed to JSON column as-is.
         """
         val = setting_data.value
         if val is None:
-            value_str = ""
-        elif isinstance(val, (dict, list)):
-            value_str = json.dumps(val)
-        else:
-            value_str = str(val)
+            val = ""
         existing = await self.repository.get_by_key(key)
+        _cache_invalidate(key)
         if existing:
-            await self.repository.update_by_key(key, {"value": value_str})
+            await self.repository.update_by_key(key, {"value": val})
             setting = await self.repository.get_by_key(key)
         else:
             setting = await self.repository.create(
-                {"key": key, "value": value_str, "description": None}
+                {"key": key, "value": val, "description": None}
             )
         return SettingResponse(
             key=setting.key,

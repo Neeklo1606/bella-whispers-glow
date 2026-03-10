@@ -1,5 +1,6 @@
 """
 YooKassa payment provider implementation.
+Loads keys from system_settings, fallback to .env.
 """
 import hmac
 import hashlib
@@ -14,9 +15,10 @@ from .base import PaymentProvider
 class YooKassaProvider(PaymentProvider):
     """YooKassa payment provider."""
 
-    def __init__(self):
-        self.shop_id = settings.YOOKASSA_SHOP_ID
-        self.secret_key = settings.YOOKASSA_SECRET_KEY
+    def __init__(self, shop_id: str = "", secret_key: str = ""):
+        """Accept shop_id/secret_key from caller (system_settings); fallback to .env."""
+        self.shop_id = (shop_id or "").strip() or settings.YOOKASSA_SHOP_ID
+        self.secret_key = (secret_key or "").strip() or settings.YOOKASSA_SECRET_KEY
         self.test_mode = settings.YOOKASSA_TEST_MODE
         self.base_url = (
             "https://api.yookassa.ru/v3"

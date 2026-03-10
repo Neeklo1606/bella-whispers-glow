@@ -2,7 +2,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
-# TODO: Implement when models are defined
+# No ScheduleEvent model - schedule uses broadcasts.
+# Return empty list to prevent runtime crashes in ScheduleService.
 
 
 class ScheduleRepository:
@@ -11,4 +12,10 @@ class ScheduleRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    # TODO: Implement methods
+    async def get_upcoming_events(self) -> List:
+        """Get upcoming schedule events. No model yet - returns empty list."""
+        return []
+
+    async def get_past_events(self) -> List:
+        """Get past schedule events. No model yet - returns empty list."""
+        return []

@@ -68,7 +68,8 @@ class PaymentService:
         
         # Create payment with provider
         try:
-            provider_result = await self.provider.create_payment(
+            provider = await self._get_provider()
+            provider_result = await provider.create_payment(
                 amount=amount,
                 currency=payment.currency,
                 description=f"Subscription: {plan.name}",
@@ -127,7 +128,8 @@ class PaymentService:
         try:
             # Verify webhook signature (if signature provided)
             if webhook_data.signature:
-                if not await self.provider.verify_webhook(
+                provider = await self._get_provider()
+                if not await provider.verify_webhook(
                     webhook_data.object, webhook_data.signature
                 ):
                     logger.warning("Invalid webhook signature")

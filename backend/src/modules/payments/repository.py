@@ -14,8 +14,11 @@ class PaymentRepository:
         self.db = db
 
     async def create(self, payment_data: dict) -> Payment:
-        """Create new payment."""
-        payment = Payment(**payment_data)
+        """Create new payment. Maps metadata to provider_metadata for model compatibility."""
+        data = dict(payment_data)
+        if "metadata" in data:
+            data["provider_metadata"] = data.pop("metadata")
+        payment = Payment(**data)
         self.db.add(payment)
         await self.db.flush()
         await self.db.refresh(payment)

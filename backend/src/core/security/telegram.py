@@ -1,10 +1,13 @@
 """
 Telegram WebApp initData verification.
+Uses system_settings for TELEGRAM_BOT_TOKEN, fallback to .env.
 """
 import hmac
 import hashlib
 import urllib.parse
 from typing import Dict, Optional
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from ...core.config import settings
 
 
@@ -26,58 +29,51 @@ def parse_init_data(init_data: str) -> Dict[str, str]:
     return parsed
 
 
-def verify_telegram_init_data(init_data: str) -> bool:
+async def get_telegram_bot_token(db: AsyncSession) -> str:
     """
-    Verify Telegram WebApp initData signature.
-    
-    Steps:
-    1. Parse initData
-    2. Extract hash
-    3. Create data_check_string (all fields except hash, sorted alphabetically)
-    4. Create secret key using bot token
-    5. Generate HMAC SHA256
-    6. Compare with hash
-    
-    Args:
-        init_data: Raw initData string from Telegram WebApp
-        
-    Returns:
-        True if signature is valid, False otherwise
+    Get TELEGRAM_BOT_TOKEN from system_settings, fallback to .env.
     """
+    from ...modules.system_settings.service import SystemSettingService
+    service = SystemSettingService(db)
+    token = await service.get("TELEGRAM_BOT_TOKEN")
+    if token and token.strip():
+        return token.strip()
+    return settings.TELEGRAM_BOT_TOKEN or ""
+
+
+def _verify_telegram_init_data_with_token(init_data: str, bot_token: str) -> bool:
+    """Verify initData using given bot token (internal)."""
+    if not bot_token:
+        return False
     try:
-        # Parse initData
         data = parse_init_data(init_data)
-        
-        # Extract hash
         received_hash = data.pop("hash", None)
         if not received_hash:
             return False
-        
-        # Create data_check_string (all fields except hash, sorted alphabetically)
         data_check_string = "\n".join(
             f"{key}={value}" for key, value in sorted(data.items())
         )
-        
-        # Create secret key using bot token
-        # Secret key = HMAC SHA256 of "WebAppData" with bot token as key
         secret_key = hmac.new(
             "WebAppData".encode(),
-            settings.TELEGRAM_BOT_TOKEN.encode(),
+            bot_token.encode(),
             hashlib.sha256
         ).digest()
-        
-        # Generate HMAC SHA256
         calculated_hash = hmac.new(
             secret_key,
             data_check_string.encode(),
             hashlib.sha256
         ).hexdigest()
-        
-        # Compare with received hash
         return hmac.compare_digest(calculated_hash, received_hash)
-    
     except Exception:
         return False
+
+
+def verify_telegram_init_data(init_data: str, bot_token: str) -> bool:
+    """
+    Verify Telegram WebApp initData signature.
+    Caller must pass bot_token from get_telegram_bot_token(db).
+    """
+    return _verify_telegram_init_data_with_token(init_data, bot_token)
 
 
 def extract_user_data(init_data: str) -> Optional[Dict]:
