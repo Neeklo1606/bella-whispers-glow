@@ -2,9 +2,8 @@
 Subscription handlers: tariffs, subscription status.
 """
 import logging
-from aiogram import Dispatcher
+from aiogram import Dispatcher, F
 from aiogram.types import CallbackQuery
-from aiogram.filters import Text
 
 from ..services.api_client import get_api_client
 from ..keyboards.main_menu import get_main_menu_keyboard, get_tariff_keyboard
@@ -46,7 +45,7 @@ async def show_tariffs(callback: CallbackQuery):
         )
     except Exception as e:
         logger.warning("edit_text failed, sending new message: %s", e)
-        await callback.message.answer(text, reply_markup=get_tariff_keyboard(config.MINIAPP_URL))
+        await callback.message.answer(text, reply_markup=get_tariff_keyboard(miniapp_url))
 
 
 async def show_subscription_status(callback: CallbackQuery):
@@ -65,5 +64,5 @@ async def show_subscription_status(callback: CallbackQuery):
 
 def register_subscription_handlers(dp: Dispatcher) -> None:
     """Register subscription handlers."""
-    dp.callback_query.register(show_tariffs, Text("tariffs"))
-    dp.callback_query.register(show_subscription_status, Text("subscription"))
+    dp.callback_query.register(show_tariffs, F.data == "tariffs")
+    dp.callback_query.register(show_subscription_status, F.data == "subscription")
