@@ -67,7 +67,7 @@ async def main():
 
         pw_hash = _pwd.hash(ADMIN_PASSWORD)
         uid = str(uuid.uuid4())
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc)
 
         await session.execute(text("""
             INSERT INTO users (id, email, password_hash, first_name, last_name, role, created_at, updated_at)
