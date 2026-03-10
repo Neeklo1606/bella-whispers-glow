@@ -79,8 +79,9 @@ $sshKey = "$env:USERPROFILE\.ssh\id_ed25519"
 $server = "root@155.212.210.214"
 $deployScript = "/var/www/bella/deploy.sh"
 
-# Execute deployment script on server
-ssh -i $sshKey $server "bash $deployScript"
+# Execute deployment script on server (use deployment/deploy.sh directly for reliability)
+$deployScriptReal = "/var/www/bella/deployment/deploy.sh"
+ssh -i $sshKey $server "bash $deployScriptReal"
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Deployment failed"
