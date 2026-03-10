@@ -8,7 +8,7 @@ import os
 import sys
 import uuid
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime
 
 # Load .env
 backend_dir = Path(__file__).resolve().parent.parent
@@ -72,7 +72,7 @@ async def main():
 
         pw_hash = _hash_pw(ADMIN_PASSWORD)
         uid = str(uuid.uuid4())
-        now = datetime.now(timezone.utc)
+        now = datetime.utcnow()  # naive UTC for PostgreSQL timestamp
 
         await session.execute(text("""
             INSERT INTO users (id, email, password_hash, first_name, last_name, role, created_at, updated_at)
