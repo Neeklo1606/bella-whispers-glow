@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from typing import Dict, List
 from datetime import datetime, date, timedelta
+import uuid
 from uuid import UUID
 
 from ...core.db import get_db
@@ -490,7 +491,7 @@ async def admin_test_payment(
         async with httpx.AsyncClient() as client:
             r = await client.post(
                 "https://api.yookassa.ru/v3/payments",
-                headers={"Authorization": f"Basic {auth}", "Idempotence-Key": str(UUID())},
+                headers={"Authorization": f"Basic {auth}", "Idempotence-Key": str(uuid.uuid4())},
                 json={"amount": {"value": "1.00", "currency": "RUB"}, "capture": True, "description": "Admin test"},
                 timeout=10
             )
