@@ -12,6 +12,7 @@ import SubscriptionManagement from "./pages/SubscriptionManagement";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
 import AdminSubscriptions from "./pages/AdminSubscriptions";
+import AdminPayments from "./pages/AdminPayments";
 import AdminSettings from "./pages/AdminSettings";
 import AdminContent from "./pages/AdminContent";
 import AdminPlans from "./pages/AdminPlans";
@@ -57,6 +58,7 @@ const App = () => (
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="subscriptions" element={<AdminSubscriptions />} />
+            <Route path="payments" element={<AdminPayments />} />
             <Route path="plans" element={<AdminPlans />} />
             <Route path="settings" element={<AdminSettings />} />
             <Route path="broadcasts" element={<AdminBroadcasts />} />

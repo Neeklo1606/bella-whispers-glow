@@ -201,6 +201,38 @@ export async function getAdminSubscriptions(skip = 0, limit = 100): Promise<Admi
   return adminApiRequest<AdminSubscription[]>(`/api/admin/subscriptions?skip=${skip}&limit=${limit}`);
 }
 
+export interface AdminPayment {
+  id: string;
+  user_id: string;
+  plan_id?: string;
+  subscription_id?: string;
+  amount: number;
+  currency: string;
+  status: string;
+  provider: string;
+  payment_url?: string;
+  paid_at?: string;
+  created_at: string;
+}
+
+export interface AdminPaymentStats {
+  total_revenue: number;
+  total_payments: number;
+  revenue_today: number;
+  revenue_week: number;
+  revenue_month: number;
+  payments_today: number;
+  by_status: Record<string, number>;
+}
+
+export async function getAdminPayments(skip = 0, limit = 100): Promise<AdminPayment[]> {
+  return adminApiRequest<AdminPayment[]>(`/api/admin/payments?skip=${skip}&limit=${limit}`);
+}
+
+export async function getAdminPaymentStats(): Promise<AdminPaymentStats> {
+  return adminApiRequest<AdminPaymentStats>("/api/admin/payments/stats");
+}
+
 export async function banUser(userId: string): Promise<{ success: boolean; message: string }> {
   return adminApiRequest(`/api/admin/users/${userId}/ban`, { method: "POST" });
 }

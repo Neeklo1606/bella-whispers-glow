@@ -149,6 +149,79 @@ async def admin_get_payments(
     return [PaymentResponse.model_validate(p) for p in payments]
 
 
+@router.get("/payments/stats")
+async def admin_get_payment_stats(
+    admin_user: User = Depends(require_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get payment statistics (revenue, counts by status, by period)."""
+    from ...modules.payments.models import Payment, PaymentStatus
+    today = date.today()
+    week_ago = today - timedelta(days=7)
+    month_ago = today - timedelta(days=30)
+
+    # Total completed revenue
+    total_rev = await db.execute(
+        select(func.coalesce(func.sum(Payment.amount), 0)).where(
+            Payment.status == PaymentStatus.COMPLETED
+        )
+    )
+    total_revenue = float(total_rev.scalar() or 0)
+
+    # Counts by status
+    status_counts = {}
+    for st in PaymentStatus:
+        r = await db.execute(select(func.count(Payment.id)).where(Payment.status == st))
+        status_counts[st.value] = r.scalar() or 0
+
+    # Revenue today
+    rev_today_r = await db.execute(
+        select(func.coalesce(func.sum(Payment.amount), 0)).where(
+            func.date(Payment.created_at) == today,
+            Payment.status == PaymentStatus.COMPLETED,
+        )
+    )
+    revenue_today = float(rev_today_r.scalar() or 0)
+
+    # Revenue this week
+    rev_week_r = await db.execute(
+        select(func.coalesce(func.sum(Payment.amount), 0)).where(
+            func.date(Payment.created_at) >= week_ago,
+            Payment.status == PaymentStatus.COMPLETED,
+        )
+    )
+    revenue_week = float(rev_week_r.scalar() or 0)
+
+    # Revenue this month
+    rev_month_r = await db.execute(
+        select(func.coalesce(func.sum(Payment.amount), 0)).where(
+            func.date(Payment.created_at) >= month_ago,
+            Payment.status == PaymentStatus.COMPLETED,
+        )
+    )
+    revenue_month = float(rev_month_r.scalar() or 0)
+
+    # Count payments today
+    cnt_today_r = await db.execute(
+        select(func.count(Payment.id)).where(func.date(Payment.created_at) == today)
+    )
+    payments_today = cnt_today_r.scalar() or 0
+
+    # Total count
+    total_cnt_r = await db.execute(select(func.count(Payment.id)))
+    total_payments = total_cnt_r.scalar() or 0
+
+    return {
+        "total_revenue": total_revenue,
+        "total_payments": total_payments,
+        "revenue_today": revenue_today,
+        "revenue_week": revenue_week,
+        "revenue_month": revenue_month,
+        "payments_today": payments_today,
+        "by_status": status_counts,
+    }
+
+
 @router.get("/users")
 async def admin_get_users(
     admin_user: User = Depends(require_admin_user),
@@ -386,19 +459,26 @@ async def admin_test_payment(
     admin_user: User = Depends(require_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Test YooKassa payment configuration."""
+    """Test YooKassa payment configuration. Uses system_settings, fallback to env."""
+    from ...core.config import settings as app_settings
     service = SystemSettingService(db)
-    settings = await service.get_settings()
-    
+    db_settings = await service.get_settings()
+
     def get_val(key: str) -> str:
-        s = settings.get(key)
+        s = db_settings.get(key)
         if s and s.value is not None:
-            return str(s.value)
+            v = str(s.value).strip()
+            if v:
+                return v
+        if key == "YOOKASSA_SHOP_ID":
+            return (app_settings.YOOKASSA_SHOP_ID or "").strip()
+        if key == "YOOKASSA_SECRET_KEY":
+            return (app_settings.YOOKASSA_SECRET_KEY or "").strip()
         return ""
-    
+
     shop_id = get_val("YOOKASSA_SHOP_ID")
     secret = get_val("YOOKASSA_SECRET_KEY")
-    
+
     if not shop_id or not secret:
         return {"ok": False, "error": "YOOKASSA_SHOP_ID or YOOKASSA_SECRET_KEY is not set"}
     
