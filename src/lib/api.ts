@@ -262,6 +262,28 @@ export async function deleteAdminPlan(planId: string): Promise<void> {
   return adminApiRequest(`/api/admin/plans/${planId}`, { method: "DELETE" });
 }
 
+export interface BroadcastSendRequest {
+  text: string;
+  media_type?: "photo" | "video";
+  media_url?: string;
+  target: "all" | "selected";
+  user_ids?: string[];
+}
+
+export interface BroadcastSendResponse {
+  sent: number;
+  failed: number;
+  total: number;
+  errors: string[];
+}
+
+export async function sendBroadcast(data: BroadcastSendRequest): Promise<BroadcastSendResponse> {
+  return adminApiRequest<BroadcastSendResponse>("/api/admin/broadcasts/send", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
 export interface TestTelegramResult {
   ok: boolean;
   bot?: unknown;

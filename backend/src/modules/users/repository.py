@@ -68,3 +68,22 @@ class UserRepository:
             select(User).offset(skip).limit(limit)
         )
         return list(result.scalars().all())
+
+    async def get_by_ids(self, user_ids: List[UUID]) -> List[User]:
+        """Get users by IDs, only those with telegram_id."""
+        if not user_ids:
+            return []
+        result = await self.db.execute(
+            select(User).where(
+                User.id.in_(user_ids),
+                User.telegram_id.isnot(None),
+            )
+        )
+        return list(result.scalars().all())
+
+    async def get_all_with_telegram(self, limit: int = 10000) -> List[User]:
+        """Get all users that have telegram_id (for broadcasts)."""
+        result = await self.db.execute(
+            select(User).where(User.telegram_id.isnot(None)).limit(limit)
+        )
+        return list(result.scalars().all())

@@ -182,28 +182,62 @@ class TelegramBotService:
             return False
 
     async def send_message(self, user_id: int, text: str) -> bool:
-        """
-        Send message to user via bot.
-        
-        Args:
-            user_id: Telegram user ID
-            text: Message text
-            
-        Returns:
-            True if successful, False otherwise
-        """
+        """Send text message to user via bot."""
         try:
-            await self.bot.send_message(
-                chat_id=user_id,
-                text=text,
-            )
+            await self.bot.send_message(chat_id=user_id, text=text)
             return True
         except TelegramAPIError as e:
-            logger.error(f"Failed to send message: {e}")
+            logger.error(f"Failed to send message to {user_id}: {e}")
             return False
         except Exception as e:
             logger.error(f"Unexpected error sending message: {e}")
             return False
+
+    async def send_photo(self, user_id: int, photo_url: str, caption: str = "") -> bool:
+        """Send photo to user via bot."""
+        try:
+            await self.bot.send_photo(
+                chat_id=user_id,
+                photo=photo_url,
+                caption=caption[:1024] if caption else None,
+            )
+            return True
+        except TelegramAPIError as e:
+            logger.error(f"Failed to send photo to {user_id}: {e}")
+            return False
+        except Exception as e:
+            logger.error(f"Unexpected error sending photo: {e}")
+            return False
+
+    async def send_video(self, user_id: int, video_url: str, caption: str = "") -> bool:
+        """Send video to user via bot."""
+        try:
+            await self.bot.send_video(
+                chat_id=user_id,
+                video=video_url,
+                caption=caption[:1024] if caption else None,
+            )
+            return True
+        except TelegramAPIError as e:
+            logger.error(f"Failed to send video to {user_id}: {e}")
+            return False
+        except Exception as e:
+            logger.error(f"Unexpected error sending video: {e}")
+            return False
+
+    async def send_to_user(
+        self,
+        user_id: int,
+        text: str,
+        media_type: Optional[str] = None,
+        media_url: Optional[str] = None,
+    ) -> bool:
+        """Send message to user. If media_type/url, send photo or video; else text only."""
+        if media_type == "photo" and media_url:
+            return await self.send_photo(user_id, media_url, text)
+        if media_type == "video" and media_url:
+            return await self.send_video(user_id, media_url, text)
+        return await self.send_message(user_id, text)
 
     async def close(self):
         """Close bot session. No-op when using cached shared instance."""

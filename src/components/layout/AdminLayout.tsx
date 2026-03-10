@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { BarChart3, Users, CreditCard, Settings, FileText, ArrowLeft, LogOut, Receipt } from "lucide-react";
+import { BarChart3, Users, CreditCard, Settings, FileText, ArrowLeft, LogOut, Receipt, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { removeAdminToken } from "@/lib/api";
@@ -10,6 +10,7 @@ const adminNav = [
   { to: "/admin/users", icon: Users, label: "Пользователи" },
   { to: "/admin/subscriptions", icon: CreditCard, label: "Подписки" },
   { to: "/admin/plans", icon: Receipt, label: "Тарифы" },
+  { to: "/admin/broadcasts", icon: Send, label: "Рассылки" },
   { to: "/admin/content", icon: FileText, label: "Контент MiniApp" },
   { to: "/admin/settings", icon: Settings, label: "Настройки" },
 ];

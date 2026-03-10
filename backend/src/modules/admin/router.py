@@ -5,6 +5,7 @@ All routes require admin authentication.
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 
 from .plans_router import router as plans_router
+from .broadcasts_router import router as admin_broadcasts_router
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from typing import Dict, List
@@ -25,6 +26,7 @@ from ...modules.users.repository import UserRepository
 router = APIRouter()
 
 router.include_router(plans_router, prefix="/plans", tags=["admin-plans"])
+router.include_router(admin_broadcasts_router, prefix="/broadcasts", tags=["admin-broadcasts"])
 
 
 @router.get("/dashboard")
