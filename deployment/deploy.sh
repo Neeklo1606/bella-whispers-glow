@@ -109,10 +109,14 @@ if [ -d "$BOT_DIR" ]; then
     print_info "Step 3: Installing bot dependencies..."
     cd "$BOT_DIR"
     
-    BOT_PIP="/usr/bin/python3 -m pip"
-    [ -f "venv/bin/pip" ] && BOT_PIP="./venv/bin/pip"
+    if [ ! -d "venv" ]; then
+        print_info "Creating bot venv..."
+        /usr/bin/python3 -m venv venv
+    fi
+    BOT_PIP="./venv/bin/pip"
     
     if [ -f "requirements.txt" ]; then
+        $BOT_PIP install --upgrade pip --quiet
         $BOT_PIP install -r requirements.txt --quiet
         print_success "Bot dependencies installed"
     else
