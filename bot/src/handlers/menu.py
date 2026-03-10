@@ -19,10 +19,13 @@ async def back_to_main_menu(callback: CallbackQuery):
 
 
 async def show_support(callback: CallbackQuery):
-    """Show support / feedback info."""
+    """Обратная связь: Напишите ваш вопрос — сообщение пересылается владельцу."""
     await callback.answer()
-    support_username = (get_runtime("SUPPORT_USERNAME") or "").strip().lstrip("@")
-    text = f"Обратная связь:\n\nНапишите нам в Telegram: @{support_username}" if support_username else "Обратная связь:\n\nНапишите нам в Telegram."
+    from ..utils.user_state import set_state
+    if callback.from_user:
+        set_state(callback.from_user.id, "awaiting_feedback")
+    support_username = (get_runtime("SUPPORT_USERNAME") or "Bella_hasias").strip().lstrip("@")
+    text = f"Напишите ваш вопрос.\n\nСообщение будет переслано @{support_username}"
     try:
         await callback.message.edit_text(
             text,

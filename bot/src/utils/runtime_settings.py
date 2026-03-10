@@ -21,8 +21,9 @@ _refresh_task: Optional[asyncio.Task] = None
 
 _DEFAULTS = {
     "MINIAPP_URL": "https://app.bellahasias.ru",
-    "OFFER_URL": "https://app.bellahasias.ru/privacy",
+    "OFFER_URL": "https://bellahasias.ru/privacy",
     "SUPPORT_USERNAME": "Bella_hasias",
+    "CONTACT_LINK": "https://t.me/Bella_hasias",
 }
 
 
@@ -49,7 +50,7 @@ async def _fetch_settings() -> None:
             if r.status_code == 200:
                 data = r.json()
                 new_cache: dict[str, str] = {}
-                for key in ("MINIAPP_URL", "OFFER_URL", "SUPPORT_USERNAME"):
+                for key in ("MINIAPP_URL", "OFFER_URL", "SUPPORT_USERNAME", "CONTACT_LINK"):
                     if key in data:
                         entry = data[key]
                         if isinstance(entry, dict):

@@ -9,7 +9,7 @@ from .service import SystemSettingService
 DEFAULT_SETTINGS = {
     "TELEGRAM_BOT_TOKEN": "8716981874:AAE2hzfIx8Gk0syIGwmp0ZzP36TRO9CtR8g",
     "TELEGRAM_CHANNEL_ID": "-1003802293810",
-    "SUPPORT_USERNAME": "@bellahasias_bot",
+    "SUPPORT_USERNAME": "Bella_hasias",
     "MINIAPP_URL": "https://app.bellahasias.ru",
     "OFFER_URL": "https://bellahasias.ru/privacy",
     "TELEGRAM_BOT_LINK": "https://t.me/bellahasias_bot",

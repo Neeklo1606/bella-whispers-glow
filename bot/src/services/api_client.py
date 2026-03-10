@@ -32,16 +32,47 @@ class APIClient:
             return response.json()
         return None
 
-    async def get_subscription(self, user_id: str) -> Optional[Dict[str, Any]]:
-        """Get user subscription."""
-        # TODO: Implement with auth token
-        # response = await self.client.get(f"/api/subscriptions/me", headers={"Authorization": f"Bearer {token}"})
-        pass
+    async def get_subscription_by_telegram(self, telegram_id: int) -> Optional[Dict[str, Any]]:
+        """GET /api/bot/subscription?telegram_id=X - bot auth."""
+        headers = {}
+        if self.config.BOT_API_SECRET:
+            headers["X-Bot-Secret"] = self.config.BOT_API_SECRET
+        response = await self.client.get(
+            f"/api/bot/subscription?telegram_id={telegram_id}",
+            headers=headers,
+        )
+        if response.status_code == 200:
+            return response.json()
+        return None
 
-    async def create_payment(self, user_id: str, subscription_id: str) -> Optional[Dict[str, Any]]:
-        """Create payment."""
-        # TODO: Implement with auth token
-        pass
+    async def create_payment_from_bot(
+        self,
+        telegram_id: int,
+        plan_id: str,
+        email: str,
+        first_name: str = "",
+        last_name: str = "",
+        username: str = "",
+    ) -> Optional[Dict[str, Any]]:
+        """POST /api/bot/create-payment - bot auth."""
+        headers = {"Content-Type": "application/json"}
+        if self.config.BOT_API_SECRET:
+            headers["X-Bot-Secret"] = self.config.BOT_API_SECRET
+        response = await self.client.post(
+            "/api/bot/create-payment",
+            json={
+                "telegram_id": telegram_id,
+                "plan_id": plan_id,
+                "email": email,
+                "first_name": first_name,
+                "last_name": last_name,
+                "username": username,
+            },
+            headers=headers,
+        )
+        if response.status_code == 200:
+            return response.json()
+        return None
 
     async def get_plans(self) -> list[Dict[str, Any]]:
         """GET /api/subscriptions/plans - list active plans (no auth)."""

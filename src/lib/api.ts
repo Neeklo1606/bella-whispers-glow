@@ -228,6 +228,40 @@ export async function getUserSubscriptions(userId: string): Promise<AdminSubscri
   return adminApiRequest<AdminSubscription[]>(`/api/admin/users/${userId}/subscriptions`);
 }
 
+export interface AdminPlan {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  first_month_price?: number;
+  duration_days: number;
+  features?: string[];
+  currency: string;
+  is_active: boolean;
+}
+
+export async function getAdminPlans(): Promise<AdminPlan[]> {
+  return adminApiRequest<AdminPlan[]>("/api/admin/plans");
+}
+
+export async function createAdminPlan(data: Partial<AdminPlan>): Promise<AdminPlan> {
+  return adminApiRequest<AdminPlan>("/api/admin/plans", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updateAdminPlan(planId: string, data: Partial<AdminPlan>): Promise<AdminPlan> {
+  return adminApiRequest<AdminPlan>(`/api/admin/plans/${planId}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteAdminPlan(planId: string): Promise<void> {
+  return adminApiRequest(`/api/admin/plans/${planId}`, { method: "DELETE" });
+}
+
 export interface TestTelegramResult {
   ok: boolean;
   bot?: unknown;

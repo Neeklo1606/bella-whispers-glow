@@ -59,9 +59,9 @@ async def get_plans(
     admin_user: User = Depends(require_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Get all subscription plans."""
+    """Get all subscription plans (active and inactive)."""
     repo = SubscriptionPlanRepository(db)
-    plans = await repo.get_all_active()
+    plans = await repo.get_all()
     return [_plan_to_response(p) for p in plans]
 
 

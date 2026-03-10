@@ -5,7 +5,7 @@ from fastapi import Header, HTTPException, status
 from ...core.config import settings
 
 
-async def verify_bot_secret(x_bot_secret: str = Header(..., alias="X-Bot-Secret")) -> str:
+async def verify_bot_secret(x_bot_secret: str | None = Header(None, alias="X-Bot-Secret")) -> str:
     """
     Verify bot API secret from header.
     
@@ -20,9 +20,9 @@ async def verify_bot_secret(x_bot_secret: str = Header(..., alias="X-Bot-Secret"
     """
     if not settings.BOT_API_SECRET:
         # If not configured, allow (for development)
-        return x_bot_secret
-    
-    if x_bot_secret != settings.BOT_API_SECRET:
+        return x_bot_secret or ""
+
+    if not x_bot_secret or x_bot_secret != settings.BOT_API_SECRET:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid bot secret",

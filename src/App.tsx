@@ -14,6 +14,7 @@ import AdminUsers from "./pages/AdminUsers";
 import AdminSubscriptions from "./pages/AdminSubscriptions";
 import AdminSettings from "./pages/AdminSettings";
 import AdminContent from "./pages/AdminContent";
+import AdminPlans from "./pages/AdminPlans";
 import AdminLogin from "./pages/AdminLogin";
 import { AdminLayout } from "./components/layout/AdminLayout";
 import { AdminGuard } from "./components/AdminGuard";
@@ -55,6 +56,7 @@ const App = () => (
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="subscriptions" element={<AdminSubscriptions />} />
+            <Route path="plans" element={<AdminPlans />} />
             <Route path="settings" element={<AdminSettings />} />
             <Route path="content" element={<AdminContent />} />
           </Route>
