@@ -17,6 +17,8 @@ from ...core.security import require_admin_user
 from ...modules.system_settings.service import SystemSettingService
 from ...modules.system_settings.schemas import SettingResponse, SettingUpdate
 from ...modules.users.models import User
+from ...modules.users.schemas import UserResponse, AdminUserCreate, AdminUserUpdate
+from ...modules.users.enums import UserRole
 from ...modules.subscriptions.repository import SubscriptionRepository
 from ...modules.subscriptions.models import SubscriptionStatus
 from ...modules.payments.repository import PaymentRepository
@@ -157,11 +159,82 @@ async def admin_get_users(
     """Get all users."""
     user_repo = UserRepository(db)
     users = await user_repo.get_all(skip=skip, limit=limit)
-    from ...modules.users.schemas import UserResponse
     return [UserResponse.model_validate(u) for u in users]
 
 
-@router.post("/subscriptions/{subscription_id}/revoke")
+@router.post("/users", response_model=UserResponse)
+async def admin_create_user(
+    data: AdminUserCreate,
+    admin_user: User = Depends(require_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Create admin user for admin panel access."""
+    if data.role not in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Role must be admin or super_admin for admin panel access",
+        )
+    user_repo = UserRepository(db)
+    existing = await user_repo.get_by_email(data.email)
+    if existing:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+    user = await user_repo.create({
+        "email": data.email,
+        "password": data.password,
+        "first_name": data.first_name,
+        "last_name": data.last_name,
+        "role": data.role,
+    })
+    await db.commit()
+    await db.refresh(user)
+    return UserResponse.model_validate(user)
+
+
+@router.delete("/users/{user_id}")
+async def admin_delete_user(
+    user_id: str,
+    admin_user: User = Depends(require_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Delete user. Cannot delete current admin."""
+    target_id = UUID(user_id)
+    if target_id == admin_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete yourself",
+        )
+    user_repo = UserRepository(db)
+    deleted = await user_repo.delete(target_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="User not found")
+    await db.commit()
+    return {"success": True, "message": "User deleted"}
+
+
+@router.patch("/users/{user_id}", response_model=UserResponse)
+async def admin_update_user(
+    user_id: str,
+    data: AdminUserUpdate,
+    admin_user: User = Depends(require_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Update user role or password."""
+    user_repo = UserRepository(db)
+    user = await user_repo.get_by_id(UUID(user_id))
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    updates = {}
+    if data.role is not None:
+        updates["role"] = data.role
+    if data.password is not None and len(data.password) >= 6:
+        updates["password"] = data.password
+    if not updates:
+        await db.refresh(user)
+        return UserResponse.model_validate(user)
+    await user_repo.update(user.id, updates)
+    await db.commit()
+    await db.refresh(user)
+    return UserResponse.model_validate(user)
 async def admin_revoke_subscription(
     subscription_id: str,
     admin_user: User = Depends(require_admin_user),

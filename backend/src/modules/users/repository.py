@@ -87,3 +87,12 @@ class UserRepository:
             select(User).where(User.telegram_id.isnot(None)).limit(limit)
         )
         return list(result.scalars().all())
+
+    async def delete(self, user_id: UUID) -> bool:
+        """Delete user by ID."""
+        user = await self.get_by_id(user_id)
+        if not user:
+            return False
+        await self.db.delete(user)
+        await self.db.flush()
+        return True

@@ -205,6 +205,44 @@ export async function banUser(userId: string): Promise<{ success: boolean; messa
   return adminApiRequest(`/api/admin/users/${userId}/ban`, { method: "POST" });
 }
 
+export interface AdminUserCreateRequest {
+  email: string;
+  password: string;
+  first_name?: string;
+  last_name?: string;
+  role: "admin" | "super_admin";
+}
+
+export async function createAdminUser(
+  data: AdminUserCreateRequest
+): Promise<AdminUser> {
+  return adminApiRequest<AdminUser>("/api/admin/users", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteAdminUser(
+  userId: string
+): Promise<{ success: boolean; message: string }> {
+  return adminApiRequest(`/api/admin/users/${userId}`, { method: "DELETE" });
+}
+
+export interface AdminUserUpdateRequest {
+  role?: "user" | "admin" | "super_admin";
+  password?: string;
+}
+
+export async function updateAdminUser(
+  userId: string,
+  data: AdminUserUpdateRequest
+): Promise<AdminUser> {
+  return adminApiRequest<AdminUser>(`/api/admin/users/${userId}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}
+
 export async function extendSubscription(
   subscriptionId: string,
   days: number

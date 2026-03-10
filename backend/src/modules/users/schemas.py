@@ -28,6 +28,21 @@ class UserCreate(BaseModel):
     role: UserRole = UserRole.USER
 
 
+class AdminUserCreate(BaseModel):
+    """Admin user creation schema (for admin panel access)."""
+    email: EmailStr
+    password: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    role: UserRole = UserRole.ADMIN  # ADMIN or SUPER_ADMIN
+
+
+class AdminUserUpdate(BaseModel):
+    """Admin user update schema."""
+    role: Optional[UserRole] = None
+    password: Optional[str] = None
+
+
 class UserUpdate(BaseModel):
     """User update schema."""
     username: Optional[str] = None
