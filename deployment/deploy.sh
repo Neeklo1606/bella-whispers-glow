@@ -237,11 +237,18 @@ else
     print_warning "Scheduler service is not active (optional service)"
 fi
 
-# Step 8.5: Verify backend port is listening
+# Step 8.5: Verify backend port is listening (retry, backend may need time to bind)
 print_info "Step 8.5: Verifying backend port 8000 is listening..."
-if ss -lnt | grep -q ":8000 "; then
+PORT_OK=0
+for _ in 1 2 3 4 5; do
+  sleep 2
+  if ss -lnt 2>/dev/null | grep -q ":8000"; then
     print_success "Backend is listening on port 8000"
-else
+    PORT_OK=1
+    break
+  fi
+done
+if [ "$PORT_OK" -ne 1 ]; then
     print_error "Backend is not listening on port 8000 - deployment failed"
     print_error "Rolling back deployment..."
     cd "$PROJECT_DIR"
