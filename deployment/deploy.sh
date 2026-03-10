@@ -190,13 +190,22 @@ else
     systemctl start bella-backend.service || print_error "Failed to start backend service"
 fi
 
-# Restart bot
-if systemctl is-active --quiet bella-bot.service; then
+# Ensure bot service is installed, then restart
+if [ ! -f /etc/systemd/system/bella-bot.service ] && [ -f "$PROJECT_DIR/deployment/bella-bot.service" ]; then
+    cp "$PROJECT_DIR/deployment/bella-bot.service" /etc/systemd/system/
+    systemctl daemon-reload
+    print_info "bella-bot.service installed"
+fi
+if [ -d "$PROJECT_DIR/bot" ] && [ ! -d "$PROJECT_DIR/bot/venv" ]; then
+    print_info "Creating bot venv..."
+    /usr/bin/python3 -m venv "$PROJECT_DIR/bot/venv"
+    "$PROJECT_DIR/bot/venv/bin/pip" install -r "$PROJECT_DIR/bot/requirements.txt" -q 2>/dev/null || true
+fi
+if systemctl is-active --quiet bella-bot.service 2>/dev/null; then
     systemctl restart bella-bot.service
     print_success "Bot service restarted"
 else
-    print_warning "Bot service not active, starting..."
-    systemctl start bella-bot.service || print_warning "Failed to start bot service (may not be configured)"
+    systemctl start bella-bot.service 2>/dev/null && print_success "Bot service started" || print_warning "Bot service not active (ensure bella-bot.service is installed)"
 fi
 
 # Restart scheduler
