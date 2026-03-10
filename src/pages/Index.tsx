@@ -87,10 +87,18 @@ function Header({ contactLink }: { contactLink: string }) {
 
 export default function Index() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const { data: content, isLoading } = useMiniappContent();
+  const telegramLink = content?.telegram_bot_link ?? "https://t.me/bellahasias_bot";
+  const contactLink = content?.contact_link ?? "https://t.me/Bella_hasias";
+  const planTitle = content?.plan_title ?? "Подписка на месяц";
+  const priceNote = content?.price_note ?? "далее 1500 ₽/мес · отмена в любой момент";
+  const plan = content?.plans?.[0];
+  const price = plan?.first_month_price ?? plan?.price ?? 990;
+  const faqItems = content?.faq_items ?? [];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header />
+      <Header contactLink={contactLink} />
 
       {/* ═══ HERO — fits one mobile screen ═══ */}
       <section className="min-h-[100svh] flex flex-col justify-center pt-14 pb-6 px-5">
@@ -153,13 +161,13 @@ export default function Index() {
       <section id="pricing" className="px-5 py-10 md:py-14">
         <div className="max-w-[480px] mx-auto text-center">
           <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground mb-2">
-            Подписка на месяц
+            {planTitle}
           </p>
           <p className="text-4xl md:text-5xl font-display font-bold tracking-tight mb-1">
-            990 ₽ <span className="text-lg font-normal text-muted-foreground">— первый месяц</span>
+            {isLoading ? "..." : `${price} ₽`} <span className="text-lg font-normal text-muted-foreground">— первый месяц</span>
           </p>
           <p className="text-[10px] text-muted-foreground mb-1">
-            далее 1500 ₽/мес · отмена в любой момент
+            {priceNote}
           </p>
           <p className="text-[10px] text-muted-foreground/70 mb-5">
             Доступ к чату через Telegram‑бота, сразу после оплаты
