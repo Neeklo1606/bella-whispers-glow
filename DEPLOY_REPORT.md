@@ -1,50 +1,62 @@
-# Отчёт о деплое — 2026-03-08
+# Отчёт о деплое — 2026-03-08 (полная реализация по ТЗ)
 
-## Выполнено
+## Статус: ✅ Успешно
 
-### 1. Коммит
-- **Коммит:** `f349ca5`
-- **Сообщение:** `feat: MiniApp content from API, admin content management, tariffs bootstrap`
-- **Изменения:** 13 файлов, +412 / -49 строк
-
-**Файлы:**
-- `backend/src/main.py` — подключён miniapp router
-- `backend/src/modules/system_settings/bootstrap.py` — дефолтные настройки контента и план
-- `backend/src/modules/miniapp/` — новый модуль (router, __init__)
-- `src/App.tsx` — роут `/admin/content`
-- `src/components/layout/AdminLayout.tsx` — пункт "Контент MiniApp"
-- `src/components/layout/BottomNav.tsx` — ссылка из API
-- `src/lib/api.ts` — `getMiniappContent()`, типы `MiniappContent`
-- `src/hooks/useMiniappContent.ts` — хук загрузки контента
-- `src/pages/Index.tsx`, `Pricing.tsx`, `Profile.tsx` — контент из API
-- `src/pages/AdminContent.tsx` — страница управления контентом MiniApp
-
-### 2. Push
-- **Репозиторий:** `https://github.com/Neeklo1606/bella-whispers-glow.git`
-- **Ветка:** `main`
-- **Статус:** успешно
-
-### 3. Деплой на сервер
-- **Сервер:** root@155.212.210.214
-- **Путь:** /var/www/bella
-
-**Результат:**
-- Код обновлён с git (pull успешен, HEAD: f349ca5)
-- Установка backend-зависимостей: **ошибка** — `externally-managed-environment`
-
-Причина: Python 3.12 на сервере — externally-managed environment, системный `pip install` блокируется.
-
-**Рекомендация:** настроить venv в `/var/www/bella` и в `deploy.sh` вызывать:
-```bash
-source /var/www/bella/venv/bin/activate
-pip install -r backend/requirements.txt
-```
+**Коммит:** `b23069b`  
+**Сообщение:** `feat: full ТЗ implementation - bot (tariffs, subscription, feedback, payment), admin plans, bot API`
 
 ---
 
-## Что внедрено в коде
+## Выполненные проверки
 
-1. **MiniApp контент через API** — вся конфигурация из `/api/miniapp/content`
-2. **Админка → Контент MiniApp** — редактирование ссылок, текстов, FEATURES, FAQ
-3. **Bootstrap тарифа** — создание плана «1 месяц» при отсутствии активных планов
-4. **Удаление статики** — Index, Pricing, Profile, BottomNav берут данные из API
+- [x] Линтер: ошибок нет
+- [x] Backend: роутеры подключены
+- [x] Bot: все handlers зарегистрированы
+- [x] Frontend: сборка проходит
+- [x] Git push: успешен
+- [x] Deploy: успешен (Backend, Bot, Scheduler активны)
+
+---
+
+## Реализовано по ТЗ
+
+### 1. Бот
+- **Меню:** Тарифы, Подписка, Договор оферты, Обратная связь
+- **Тарифы:** Соглашение → кнопка «Открыть договор оферты» → тарифы → Оплата российской картой / Оплатить в приложении
+- **Оплата российской картой:** Запрос email → YooKassa → кнопка «Перейти к оплате»
+- **Подписка:** Проверка по API, вывод статуса или «нет подписки» + кнопка «Тарифы»
+- **Обратная связь:** «Напишите ваш вопрос» → пересылка сообщения на @Bella_hasias
+
+### 2. Backend API
+- `GET /api/bot/subscription?telegram_id=X` — подписка по Telegram ID
+- `POST /api/bot/create-payment` — создание платежа (создание пользователя при необходимости)
+- Bootstrap: дефолтный план «1 месяц» при отсутствии активных планов
+- `SUPPORT_USERNAME` = Bella_hasias
+
+### 3. Админ-панель
+- **Тарифы** (`/admin/plans`) — создание, редактирование, включение/отключение
+- **Контент MiniApp** (`/admin/content`) — ссылки, тексты, FAQ, преимущества
+
+### 4. Изменённые/добавленные файлы (19 файлов)
+
+| Категория | Файлы |
+|-----------|-------|
+| Backend | `bot_api.py` (новый), `bot_auth.py`, `main.py`, `plans_router.py`, `repository.py`, `bootstrap.py` |
+| Bot | `handlers/__init__.py`, `menu.py`, `payment.py`, `subscription.py`, `text_messages.py` (новый), `keyboards/main_menu.py`, `api_client.py`, `runtime_settings.py`, `user_state.py` (новый) |
+| Frontend | `App.tsx`, `AdminLayout.tsx`, `api.ts`, `AdminPlans.tsx` (новый) |
+
+---
+
+## Сервер
+
+- **URL:** https://app.bellahasias.ru
+- **Сервисы:** Backend, Bot, Scheduler — активны
+- **Health:** `/health` — 200 OK
+
+---
+
+## Рекомендации после деплоя
+
+1. **BOT_API_SECRET** — задать в `.env` backend и bot для защиты API
+2. **Тарифы** — проверить наличие тарифа в админке `/admin/plans`
+3. **YooKassa** — проверить настройки в `/admin/settings` для оплаты в боте
