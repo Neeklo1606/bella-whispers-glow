@@ -16,12 +16,13 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-# Load settings from backend src
+# Load settings from backend src (avoid core.security to prevent import chain)
 sys.path.insert(0, str(backend_dir / "src"))
 from core.config import settings
-from core.security import get_password_hash
 from modules.users.models import User
 from modules.users.enums import UserRole
+from passlib.context import CryptContext
+_pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 ADMIN_EMAIL = "admin@bellahasias.ru"
 ADMIN_PASSWORD = "Admin123!"
@@ -45,7 +46,7 @@ async def ensure_admin():
             else:
                 print(f"Admin user already exists: {ADMIN_EMAIL} (role={existing.role.value})")
             return
-        password_hash = get_password_hash(ADMIN_PASSWORD)
+        password_hash = _pwd_context.hash(ADMIN_PASSWORD)
         admin_user = User(
             email=ADMIN_EMAIL,
             password_hash=password_hash,
