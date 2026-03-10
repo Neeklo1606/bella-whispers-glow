@@ -165,12 +165,14 @@ if [ -d "$BACKEND_DIR" ]; then
         print_warning "alembic.ini not found, skipping migrations"
     fi
     
-    # Step 5.5: Ensure admin user exists
+    # Step 5.5: Ensure admin user exists (standalone script, no app imports)
     print_info "Step 5.5: Ensuring admin user exists..."
-    if [ -f "scripts/ensure_admin.py" ]; then
-        $PYTHON_CMD scripts/ensure_admin.py && print_success "Admin user verified/created" || print_warning "ensure_admin.py failed (admin may already exist)"
+    if [ -f "scripts/ensure_admin_standalone.py" ]; then
+        $PYTHON_CMD scripts/ensure_admin_standalone.py && print_success "Admin user verified/created" || print_warning "ensure_admin failed (admin may already exist)"
+    elif [ -f "scripts/ensure_admin.py" ]; then
+        $PYTHON_CMD scripts/ensure_admin.py && print_success "Admin user verified/created" || print_warning "ensure_admin failed"
     else
-        print_warning "ensure_admin.py not found"
+        print_warning "ensure_admin script not found"
     fi
 else
     print_warning "Backend directory not found, skipping migrations"
