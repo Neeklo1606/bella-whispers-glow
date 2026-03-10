@@ -47,10 +47,10 @@ class Settings(BaseSettings):
     TELEGRAM_WEBHOOK_URL: str = ""
     BOT_API_SECRET: str = ""
 
-    # Payment Provider
-    YOOKASSA_SHOP_ID: str = ""
-    YOOKASSA_SECRET_KEY: str = ""
-    YOOKASSA_TEST_MODE: bool = True
+    # Payment Provider (defaults used when not set in .env)
+    YOOKASSA_SHOP_ID: str = "1294766"
+    YOOKASSA_SECRET_KEY: str = "live_dARehpUSwWdmqXUV9q5NNI_ys_hdVqdBzTujqkBfk6U"
+    YOOKASSA_TEST_MODE: bool = False
 
     # CORS
     CORS_ORIGINS: List[str] = ["http://localhost:3000"]
