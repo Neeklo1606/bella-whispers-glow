@@ -3,8 +3,7 @@
  */
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  (typeof window !== "undefined" ? window.location.origin : "http://localhost:8000");
+  import.meta.env.VITE_API_URL || "https://app.bellahasias.ru";
 
 // Telegram WebApp types
 declare global {
@@ -51,25 +50,28 @@ export interface AdminLoginResponse {
   };
 }
 
+const ADMIN_TOKEN_KEY = "access_token";
+
 /**
  * Get admin token from localStorage.
+ * Uses access_token so admin API requests send Authorization automatically.
  */
 export function getAdminToken(): string | null {
-  return localStorage.getItem("admin_token");
+  return localStorage.getItem(ADMIN_TOKEN_KEY);
 }
 
 /**
  * Set admin token in localStorage.
  */
 export function setAdminToken(token: string): void {
-  localStorage.setItem("admin_token", token);
+  localStorage.setItem(ADMIN_TOKEN_KEY, token);
 }
 
 /**
  * Remove admin token from localStorage.
  */
 export function removeAdminToken(): void {
-  localStorage.removeItem("admin_token");
+  localStorage.removeItem(ADMIN_TOKEN_KEY);
 }
 
 /**
