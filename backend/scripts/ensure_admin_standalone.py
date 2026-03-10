@@ -20,9 +20,14 @@ if env_file.exists():
             k, _, v = line.partition("=")
             os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
-# Minimal deps
-from passlib.context import CryptContext
-_pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Minimal deps: prefer bcrypt (passlib may fail with bcrypt version mismatch)
+try:
+    import bcrypt
+    def _hash_pw(pw): return bcrypt.hashpw(pw.encode(), bcrypt.gensalt()).decode()
+except Exception:
+    from passlib.context import CryptContext
+    _pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    def _hash_pw(pw): return _pwd_ctx.hash(pw)
 
 ADMIN_EMAIL = "admin@bellahasias.ru"
 ADMIN_PASSWORD = "Admin123!"
