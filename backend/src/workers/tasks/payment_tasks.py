@@ -1,23 +1,25 @@
 """
 Payment-related background tasks.
+Sync pending payments with YooKassa every 5 minutes.
 """
 import logging
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from ...core.db import AsyncSessionLocal
+from ...modules.payments.service import PaymentService
 
 logger = logging.getLogger(__name__)
 
 
 async def verify_pending_payments():
-    """Verify status of pending payments."""
+    """Sync pending payments with YooKassa. Updates status, activates subscriptions."""
     async with AsyncSessionLocal() as db:
         try:
-            # TODO: Implement payment verification
-            # 1. Find payments with status = 'pending' older than 15 minutes
-            # 2. Check status with payment provider
-            # 3. Update payment status
-            # 4. Activate subscription if payment successful
-            logger.info("Verifying pending payments...")
+            service = PaymentService(db)
+            result = await service.sync_all_pending_from_provider()
+            await db.commit()
+            if result.get("updated", 0) > 0:
+                logger.info("[PAYMENT] verify_pending: updated %d of %d", result["updated"], result.get("total", 0))
+            if result.get("errors"):
+                for err in result["errors"]:
+                    logger.warning("[PAYMENT] verify_pending error: %s", err)
         except Exception as e:
-            logger.error(f"Error verifying pending payments: {e}")
+            logger.error("[PAYMENT] verify_pending failed: %s", e)

@@ -42,23 +42,32 @@ export default function AdminPayments() {
   const [syncing, setSyncing] = useState(false);
   const { toast } = useToast();
 
-  function load() {
+  async function load() {
     setLoading(true);
-    Promise.all([getAdminPayments(), getAdminPaymentStats()])
-      .then(([list, s]) => {
-        setPayments(list);
-        setStats(s);
-      })
-      .catch(() => {
-        setPayments([]);
-        setStats(null);
-        toast({
-          title: "Ошибка загрузки",
-          description: "Не удалось загрузить платежи",
-          variant: "destructive",
-        });
-      })
-      .finally(() => setLoading(false));
+    try {
+      const [list, s] = await Promise.all([getAdminPayments(), getAdminPaymentStats()]);
+      const pendingCount = (s?.by_status?.pending ?? 0) || list.filter((p) => p.status === "pending").length;
+      if (pendingCount > 0) {
+        try {
+          await syncAdminPaymentStatus();
+        } catch {
+          /* ignore sync errors on load */
+        }
+      }
+      const [list2, s2] = await Promise.all([getAdminPayments(), getAdminPaymentStats()]);
+      setPayments(list2);
+      setStats(s2);
+    } catch {
+      setPayments([]);
+      setStats(null);
+      toast({
+        title: "Ошибка загрузки",
+        description: "Не удалось загрузить платежи",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
