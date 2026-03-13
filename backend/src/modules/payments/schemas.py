@@ -1,7 +1,12 @@
 """Payments module Pydantic schemas."""
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional
 from datetime import datetime
+
+
+def _coerce_uuid(v):
+    """Convert UUID to str for JSON serialization."""
+    return str(v) if v is not None else None
 
 
 class PaymentCreate(BaseModel):
@@ -13,6 +18,12 @@ class PaymentCreate(BaseModel):
 
 class PaymentResponse(BaseModel):
     """Payment response schema."""
+
+    @field_validator("id", "user_id", "plan_id", "subscription_id", mode="before")
+    @classmethod
+    def coerce_ids(cls, v):
+        return _coerce_uuid(v)
+
     id: str
     user_id: str
     plan_id: Optional[str] = None
