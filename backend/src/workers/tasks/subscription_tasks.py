@@ -3,16 +3,26 @@ Subscription-related background tasks.
 """
 import logging
 from datetime import datetime
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from ...core.db import AsyncSessionLocal
 from ...modules.subscriptions.repository import SubscriptionRepository
-from ...modules.subscriptions.models import SubscriptionStatus
+from ...modules.subscriptions.models import Subscription, SubscriptionStatus
 from ...modules.telegram.bot_service import TelegramBotService
 from ...modules.channel_logs.service import ChannelAccessLogService
 from ...modules.channel_logs.models import ChannelAccessEventType
+from ...modules.system_settings.service import SystemSettingService
 
 logger = logging.getLogger(__name__)
+
+REMINDER_DAYS_SETTINGS = {
+    7: "MSG_REMINDER_7",
+    3: "MSG_REMINDER_3",
+    1: "MSG_REMINDER_1",
+    0: "MSG_REMINDER_0",
+}
 
 
 async def check_expired_subscriptions():
@@ -76,12 +86,14 @@ async def check_expired_subscriptions():
                                 subscription_id=subscription.id,
                             )
                         
-                        # Send notification
-                        message = (
-                            "❌ Ваша подписка истекла.\n\n"
-                            "Доступ к каналу был отозван.\n"
-                            "Для продления подписки используйте Mini App."
-                        )
+                        # Send notification (editable in admin MSG_SUBSCRIPTION_EXPIRED)
+                        from ...modules.system_settings.service import SystemSettingService
+                        settings_svc = SystemSettingService(db)
+                        message = await settings_svc.get("MSG_SUBSCRIPTION_EXPIRED")
+                        if not message:
+                            message = "Срок вашей подписки закончился. Чтобы снова получить доступ, оформите продление."
+                        miniapp_url = await settings_svc.get("MINIAPP_URL") or "https://app.bellahasias.ru"
+                        message += f"\n\nПерейти к тарифам: {miniapp_url.rstrip('/')}/pricing"
                         await bot_service.send_message(
                             subscription.user.telegram_id,
                             message,
@@ -116,12 +128,37 @@ async def process_auto_renewals():
 
 
 async def send_renewal_reminders():
-    """Send renewal reminders to users."""
+    """Send renewal reminders: 7, 3, 1, 0 days before end. Uses MSG_REMINDER_* settings."""
     async with AsyncSessionLocal() as db:
         try:
-            # TODO: Implement renewal reminders
-            # 1. Find subscriptions expiring in 3 days with auto_renew = false
-            # 2. Send reminder via Telegram bot
-            logger.info("Sending renewal reminders...")
+            sub_repo = SubscriptionRepository(db)
+            settings_svc = SystemSettingService(db)
+            miniapp_url = await settings_svc.get("MINIAPP_URL") or "https://app.bellahasias.ru"
+            bot_svc = await TelegramBotService.create(db)
+            sent = 0
+            for days, key in REMINDER_DAYS_SETTINGS.items():
+                subs = await sub_repo.get_subscriptions_expiring_in_days(days)
+                template = await settings_svc.get(key)
+                if not template:
+                    template = f"Добрый день. Ваша подписка заканчивается через {days} дн."
+                suffix = f"\n\nПродлить подписку: {miniapp_url.rstrip('/')}/pricing"
+                for sub in subs:
+                    result = await db.execute(
+                        select(Subscription).options(selectinload(Subscription.user)).where(Subscription.id == sub.id)
+                    )
+                    sub = result.scalar_one()
+                    if not sub.user or not sub.user.telegram_id:
+                        continue
+                    end_str = sub.end_date.strftime("%d.%m.%Y") if sub.end_date else "—"
+                    text = template.replace("{{end_date}}", end_str) + suffix
+                    try:
+                        ok = await bot_svc.send_message(int(sub.user.telegram_id), text)
+                        if ok:
+                            sent += 1
+                    except Exception as e:
+                        logger.warning("Reminder send failed user=%s: %s", sub.user.telegram_id, e)
+            await bot_svc.close()
+            if sent:
+                logger.info("Sent %d renewal reminders", sent)
         except Exception as e:
-            logger.error(f"Error sending renewal reminders: {e}")
+            logger.error("Error sending renewal reminders: %s", e)

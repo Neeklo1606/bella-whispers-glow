@@ -113,6 +113,35 @@ class SubscriptionRepository:
         )
         return list(result.scalars().all())
 
+    async def get_subscriptions_expiring_in_days(
+        self, days: int
+    ) -> List[Subscription]:
+        """
+        Get active subscriptions expiring in exactly `days` days.
+        Used for renewal reminders (7, 3, 1, 0 days before end).
+        """
+        from datetime import timedelta, date, timezone
+        today = datetime.now(timezone.utc).date()
+        target_date = today + timedelta(days=days)
+        result = await self.db.execute(
+            select(Subscription).where(
+                and_(
+                    Subscription.status == SubscriptionStatus.ACTIVE,
+                    Subscription.end_date.isnot(None),
+                )
+            )
+        )
+        subs = list(result.scalars().all())
+        # Filter by date part (end_date may be timezone-aware)
+        out = []
+        for s in subs:
+            ed = s.end_date
+            if ed:
+                ed_date = ed.date() if hasattr(ed, "date") else ed
+                if ed_date == target_date:
+                    out.append(s)
+        return out
+
     async def create(self, subscription_data: dict) -> Subscription:
         """Create new subscription."""
         subscription = Subscription(**subscription_data)

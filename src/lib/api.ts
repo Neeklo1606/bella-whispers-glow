@@ -210,9 +210,22 @@ export interface AdminPayment {
   currency: string;
   status: string;
   provider: string;
+  provider_payment_id?: string;
   payment_url?: string;
   paid_at?: string;
   created_at: string;
+}
+
+export interface SyncPaymentStatusResponse {
+  updated: number;
+  total: number;
+  errors: Array<{ payment_id: string; error: string }>;
+}
+
+export async function syncAdminPaymentStatus(): Promise<SyncPaymentStatusResponse> {
+  return adminApiRequest<SyncPaymentStatusResponse>("/api/admin/payments/sync-status", {
+    method: "POST",
+  });
 }
 
 export interface AdminPaymentStats {

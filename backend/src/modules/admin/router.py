@@ -150,6 +150,19 @@ async def admin_get_payments(
     return [PaymentResponse.model_validate(p) for p in payments]
 
 
+@router.post("/payments/sync-status")
+async def admin_sync_payment_status(
+    admin_user: User = Depends(require_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Sync pending payments status from YooKassa. Updates DB and activates subscriptions for succeeded."""
+    from ...modules.payments.service import PaymentService
+    service = PaymentService(db)
+    result = await service.sync_all_pending_from_provider()
+    await db.commit()
+    return result
+
+
 @router.get("/payments/stats")
 async def admin_get_payment_stats(
     admin_user: User = Depends(require_admin_user),

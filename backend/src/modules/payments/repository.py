@@ -73,3 +73,14 @@ class PaymentRepository:
             select(Payment).where(Payment.status == PaymentStatus.PENDING)
         )
         return list(result.scalars().all())
+
+    async def get_pending_with_provider_id(self) -> List[Payment]:
+        """Get pending payments that have provider_payment_id (can be synced from YooKassa)."""
+        result = await self.db.execute(
+            select(Payment).where(
+                Payment.status == PaymentStatus.PENDING,
+                Payment.provider_payment_id.isnot(None),
+                Payment.provider_payment_id != "",
+            )
+        )
+        return list(result.scalars().all())

@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +27,22 @@ const EDITABLE_KEYS = [
   { key: "BOT_API_SECRET", label: "Bot API Secret", type: "password" as const, placeholder: "Optional" },
   { key: "YOOKASSA_SHOP_ID", label: "Shop ID", type: "text" as const, placeholder: "123456" },
   { key: "YOOKASSA_SECRET_KEY", label: "Secret Key", type: "password" as const, placeholder: "..." },
+  { key: "OFFER_URL", label: "Ссылка на договор оферты", type: "text" as const, placeholder: "https://..." },
+  { key: "MINIAPP_URL", label: "URL Mini App", type: "text" as const, placeholder: "https://app.bellahasias.ru" },
+];
+
+const MESSAGE_TEMPLATES = [
+  { key: "MSG_PAYMENT_SUCCESS", label: "Сообщение после успешной оплаты", hint: "Шаблоны: {{link}}, {{end_date}}" },
+  { key: "MSG_REMINDER_7", label: "Уведомление за 7 дней до окончания", hint: "{{end_date}}" },
+  { key: "MSG_REMINDER_3", label: "Уведомление за 3 дня", hint: "{{end_date}}" },
+  { key: "MSG_REMINDER_1", label: "Уведомление за 1 день", hint: "{{end_date}}" },
+  { key: "MSG_REMINDER_0", label: "Уведомление в день окончания", hint: "{{end_date}}" },
+  { key: "MSG_SUBSCRIPTION_EXPIRED", label: "Сообщение при истечении подписки", hint: "" },
+  { key: "MSG_TARIFFS_INTRO", label: "Текст раздела Тарифы (вступление)", hint: "" },
+  { key: "MSG_TARIFFS_ACTIVE", label: "Тарифы при активной подписке", hint: "{{end_date}}, {{days_left}}" },
+  { key: "MSG_SUBSCRIPTION_ACTIVE", label: "Подписка активна", hint: "{{end_date}}, {{days_left}}" },
+  { key: "MSG_SUBSCRIPTION_NONE", label: "Подписки нет", hint: "" },
+  { key: "MSG_SUBSCRIPTION_EXPIRED_OFFER", label: "Подписка истекла (предложение)", hint: "" },
 ];
 
 function getSettingValue(settings: Record<string, AdminSetting>, key: string): string {
@@ -53,7 +70,7 @@ export default function AdminSettings() {
       const data = await getAdminSettings();
       setSettings(data);
       const initial: Record<string, string> = {};
-      EDITABLE_KEYS.forEach((def) => {
+      [...EDITABLE_KEYS, ...MESSAGE_TEMPLATES].forEach((def) => {
         initial[def.key] = getSettingValue(data, def.key);
       });
       setValues(initial);
@@ -191,6 +208,48 @@ export default function AdminSettings() {
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Тексты сообщений бота</CardTitle>
+            <CardDescription>
+              Редактируемые шаблоны. Подстановки: {"{{link}}"}, {"{{end_date}}"}, {"{{days_left}}"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {MESSAGE_TEMPLATES.map((def) => (
+              <div key={def.key} className="space-y-2">
+                <Label htmlFor={def.key}>{def.label}</Label>
+                {def.hint && (
+                  <p className="text-xs text-muted-foreground">{def.hint}</p>
+                )}
+                <div className="flex gap-2">
+                  <Textarea
+                    id={def.key}
+                    value={values[def.key] ?? ""}
+                    onChange={(e) => setValue(def.key, e.target.value)}
+                    className="flex-1 min-h-[80px]"
+                    placeholder={def.label}
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => saveSetting(def.key)}
+                    disabled={saving[def.key]}
+                  >
+                    {saving[def.key] ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
         <Card>
           <CardHeader>
             <CardTitle>Проверка подключений</CardTitle>

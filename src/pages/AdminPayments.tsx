@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Loader2, TrendingUp, CreditCard, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   getAdminPayments,
   getAdminPaymentStats,
+  syncAdminPaymentStatus,
   type AdminPayment,
   type AdminPaymentStats,
 } from "@/lib/api";
@@ -37,6 +39,7 @@ export default function AdminPayments() {
   const [payments, setPayments] = useState<AdminPayment[]>([]);
   const [stats, setStats] = useState<AdminPaymentStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
   const { toast } = useToast();
 
   function load() {
@@ -62,6 +65,28 @@ export default function AdminPayments() {
     load();
   }, []);
 
+  async function handleSyncStatus() {
+    setSyncing(true);
+    try {
+      const res = await syncAdminPaymentStatus();
+      load();
+      if (res.updated > 0) {
+        toast({ title: "Обновлено", description: `Статус обновлён для ${res.updated} платежей` });
+      } else if (res.total === 0) {
+        toast({ title: "Нет ожидающих", description: "Нет pending-платежей для синхронизации" });
+      } else {
+        toast({ title: "Без изменений", description: `Проверено ${res.total} платежей, статусы актуальны` });
+      }
+      if (res.errors?.length) {
+        toast({ title: "Ошибки синхронизации", description: res.errors.map((e) => e.error).join("; "), variant: "destructive" });
+      }
+    } catch (e) {
+      toast({ title: "Ошибка", description: e instanceof Error ? e.message : "Не удалось синхронизировать", variant: "destructive" });
+    } finally {
+      setSyncing(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -72,8 +97,12 @@ export default function AdminPayments() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         <h1 className="text-2xl font-bold">Статистика оплат</h1>
+        <Button variant="outline" onClick={handleSyncStatus} disabled={syncing}>
+          {syncing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+          Обновить статусы из YooKassa
+        </Button>
       </div>
 
       {stats && (
@@ -180,6 +209,9 @@ export default function AdminPayments() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium">
                         {formatMoney(p.amount, p.currency)} — {p.id.slice(0, 8)}…
+                        {p.provider_payment_id && (
+                          <span className="text-muted-foreground font-normal ml-1">({p.provider_payment_id.slice(0, 8)}…)</span>
+                        )}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         User: {p.user_id.slice(0, 8)}… · {new Date(p.created_at).toLocaleString("ru")}

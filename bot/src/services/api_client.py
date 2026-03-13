@@ -107,6 +107,19 @@ class APIClient:
             return response.json()
         return []
 
+    async def get_invite_link(self, telegram_id: int) -> Optional[Dict[str, Any]]:
+        """GET /api/bot/invite-link?telegram_id=X - get channel invite link (requires active subscription)."""
+        headers = {}
+        if self.config.BOT_API_SECRET:
+            headers["X-Bot-Secret"] = self.config.BOT_API_SECRET
+        response = await self.client.get(
+            f"/api/bot/invite-link?telegram_id={telegram_id}",
+            headers=headers,
+        )
+        if response.status_code == 200:
+            return response.json()
+        return None
+
     async def close(self):
         """Close HTTP client."""
         await self.client.aclose()

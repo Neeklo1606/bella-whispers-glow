@@ -7,6 +7,10 @@ from datetime import datetime, timedelta
 import uuid
 
 from .repository import PaymentRepository
+from ..users.repository import UserRepository
+from ..telegram.service import TelegramService
+from ..telegram.bot_service import TelegramBotService
+from ..system_settings.service import SystemSettingService
 
 logger = logging.getLogger(__name__)
 from .schemas import PaymentCreate, PaymentResponse, PaymentWebhook
@@ -121,6 +125,53 @@ class PaymentService:
             )
             raise
 
+    async def sync_payment_status_from_provider(self, payment: Payment) -> bool:
+        """
+        Fetch payment status from YooKassa and update DB.
+        Returns True if status was updated.
+        """
+        if not payment.provider_payment_id:
+            logger.warning("[PAYMENT] sync skipped: no provider_payment_id payment_id=%s", str(payment.id))
+            return False
+        try:
+            status = await self.provider.get_payment_status(payment.provider_payment_id)
+            if not status:
+                logger.info("[PAYMENT] sync no status from provider payment_id=%s provider_id=%s", str(payment.id), payment.provider_payment_id)
+                return False
+        except Exception as e:
+            logger.error("[PAYMENT] sync FAILED payment_id=%s provider_id=%s error=%s", str(payment.id), payment.provider_payment_id, str(e))
+            return False
+
+        if status == "succeeded":
+            await self.repository.update(payment.id, {"status": PaymentStatus.COMPLETED, "paid_at": datetime.utcnow()})
+            await self.db.refresh(payment)
+            await self._activate_subscription_from_payment(payment)
+            await self._send_payment_success_notification(payment)
+            logger.info("[PAYMENT] sync SUCCESS payment_id=%s status=completed subscription activated", str(payment.id))
+            return True
+        if status == "canceled":
+            await self.repository.update(payment.id, {"status": PaymentStatus.FAILED})
+            logger.info("[PAYMENT] sync CANCELED payment_id=%s status=failed", str(payment.id))
+            return True
+        logger.info("[PAYMENT] sync no change payment_id=%s provider_status=%s", str(payment.id), status)
+        return False
+
+    async def sync_all_pending_from_provider(self) -> dict:
+        """
+        Sync all pending payments with provider_payment_id from YooKassa.
+        Returns {updated: N, total: M, errors: [...]}.
+        """
+        pending = await self.repository.get_pending_with_provider_id()
+        updated = 0
+        errors = []
+        for p in pending:
+            try:
+                if await self.sync_payment_status_from_provider(p):
+                    updated += 1
+            except Exception as e:
+                errors.append({"payment_id": str(p.id), "error": str(e)})
+        return {"updated": updated, "total": len(pending), "errors": errors}
+
     async def get_payment(self, payment_id: str) -> Optional[PaymentResponse]:
         """Get payment by ID."""
         payment = await self.repository.get_by_id(UUID(payment_id))
@@ -183,6 +234,7 @@ class PaymentService:
                 
                 # Activate subscription
                 await self._activate_subscription_from_payment(payment)
+                await self._send_payment_success_notification(payment)
                 logger.info("[PAYMENT] webhook SUCCESS payment_id=%s subscription activated", str(payment.id))
             elif webhook_status == "canceled":
                 await self.repository.update(
@@ -266,6 +318,41 @@ class PaymentService:
         except Exception as e:
             logger.error(f"Error activating subscription from payment {payment.id}: {e}", exc_info=True)
             raise
+
+    async def _send_payment_success_notification(self, payment: Payment) -> None:
+        """
+        After successful payment: generate invite link, format message from settings,
+        send to user via Telegram bot. User must have telegram_id.
+        """
+        user_repo = UserRepository(self.db)
+        user = await user_repo.get_by_id(payment.user_id)
+        if not user or not user.telegram_id:
+            logger.info("[PAYMENT] skip notification: user has no telegram_id user_id=%s", str(payment.user_id))
+            return
+        try:
+            tg_service = TelegramService(self.db)
+            invite_resp = await tg_service.generate_invite_link(str(payment.user_id))
+            if not invite_resp or not invite_resp.invite_link:
+                logger.warning("[PAYMENT] failed to generate invite link user_id=%s", str(payment.user_id))
+                return
+            settings_svc = SystemSettingService(self.db)
+            template = await settings_svc.get("MSG_PAYMENT_SUCCESS")
+            if not template:
+                template = (
+                    "Добрый день, спасибо за оплату.\n"
+                    "Ваша подписка активна до {{end_date}}.\n"
+                    "Вот ссылка на доступ в закрытый Telegram-канал:\n{{link}}"
+                )
+            sub_repo = SubscriptionRepository(self.db)
+            sub = await sub_repo.get_active_by_user_id(payment.user_id)
+            end_date_str = sub.end_date.strftime("%d.%m.%Y") if sub and sub.end_date else "—"
+            text = template.replace("{{link}}", invite_resp.invite_link).replace("{{end_date}}", end_date_str)
+            bot_svc = await TelegramBotService.create(self.db)
+            await bot_svc.send_message(int(user.telegram_id), text)
+            await bot_svc.close()
+            logger.info("[PAYMENT] notification sent user_id=%s telegram_id=%s", str(payment.user_id), user.telegram_id)
+        except Exception as e:
+            logger.error("[PAYMENT] notification FAILED user_id=%s error=%s", str(payment.user_id), str(e), exc_info=True)
 
     async def get_user_payments(
         self, user_id: str, skip: int = 0, limit: int = 100

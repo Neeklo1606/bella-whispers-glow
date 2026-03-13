@@ -50,7 +50,12 @@ async def _fetch_settings() -> None:
             if r.status_code == 200:
                 data = r.json()
                 new_cache: dict[str, str] = {}
-                for key in ("MINIAPP_URL", "OFFER_URL", "SUPPORT_USERNAME", "CONTACT_LINK"):
+                keys = (
+                    "MINIAPP_URL", "OFFER_URL", "SUPPORT_USERNAME", "CONTACT_LINK",
+                    "MSG_TARIFFS_INTRO", "MSG_TARIFFS_ACTIVE", "MSG_SUBSCRIPTION_ACTIVE",
+                    "MSG_SUBSCRIPTION_NONE", "MSG_SUBSCRIPTION_EXPIRED_OFFER",
+                )
+                for key in keys:
                     if key in data:
                         entry = data[key]
                         if isinstance(entry, dict):

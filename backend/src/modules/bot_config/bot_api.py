@@ -148,3 +148,31 @@ async def create_payment_from_bot(
         "payment_url": payment.payment_url,
         "amount": payment.amount,
     }
+
+
+@router.get("/invite-link")
+async def get_invite_link_by_telegram(
+    telegram_id: int = Query(..., description="Telegram user ID"),
+    _: str = Depends(verify_bot_secret),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Get invite link for closed channel by Telegram ID.
+    Requires active subscription. Returns link or 403.
+    """
+    from ..telegram.service import TelegramService
+    user_repo = UserRepository(db)
+    user = await user_repo.get_by_telegram_id(telegram_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    service = TelegramService(db)
+    link_resp = await service.generate_invite_link(str(user.id))
+    if not link_resp:
+        raise HTTPException(
+            status_code=403,
+            detail="Active subscription required",
+        )
+    return {
+        "invite_link": link_resp.invite_link,
+        "expires_at": link_resp.expires_at,
+    }

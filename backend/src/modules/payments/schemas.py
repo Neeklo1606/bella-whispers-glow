@@ -32,6 +32,7 @@ class PaymentResponse(BaseModel):
     currency: str
     status: str
     provider: str
+    provider_payment_id: Optional[str] = None
     payment_url: Optional[str] = None
     paid_at: Optional[datetime] = None
     created_at: datetime

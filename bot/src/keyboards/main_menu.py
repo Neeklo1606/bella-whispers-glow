@@ -60,10 +60,39 @@ def get_tariff_keyboard(plans: list, miniapp_url: str) -> InlineKeyboardMarkup:
 
 
 def get_subscription_no_keyboard() -> InlineKeyboardMarkup:
-    """When no subscription: Тарифы + Назад."""
+    """When no subscription: Посмотреть тарифы + Назад."""
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="💳 Тарифы", callback_data="tariffs")],
+            [InlineKeyboardButton(text="💳 Посмотреть тарифы", callback_data="tariffs")],
+            [InlineKeyboardButton(text="◀️ Назад", callback_data="main_menu")],
+        ]
+    )
+
+
+def get_tariff_keyboard_when_active(miniapp_url: str, offer_url: str) -> InlineKeyboardMarkup:
+    """When user has active subscription: Продлить, Получить ссылку, Оферта, Назад."""
+    pay_url = f"{miniapp_url.rstrip('/')}/pricing"
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="🔄 Продлить подписку", web_app=WebAppInfo(url=pay_url)),
+                InlineKeyboardButton(text="🔗 Получить ссылку в канал", callback_data="get_channel_link"),
+            ],
+            [InlineKeyboardButton(text="📄 Договор оферты", url=offer_url)],
+            [InlineKeyboardButton(text="◀️ Назад", callback_data="main_menu")],
+        ]
+    )
+
+
+def get_subscription_active_keyboard(miniapp_url: str) -> InlineKeyboardMarkup:
+    """When subscription active: Получить ссылку, Продлить, Назад."""
+    pay_url = f"{miniapp_url.rstrip('/')}/pricing"
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="🔗 Получить ссылку в канал", callback_data="get_channel_link"),
+                InlineKeyboardButton(text="🔄 Продлить подписку", web_app=WebAppInfo(url=pay_url)),
+            ],
             [InlineKeyboardButton(text="◀️ Назад", callback_data="main_menu")],
         ]
     )
