@@ -15,6 +15,7 @@ import {
   getAdminSubscriptions,
   extendSubscription,
   revokeSubscription,
+  backfillAdminSubscriptions,
   type AdminSubscription,
 } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
@@ -93,9 +94,13 @@ export default function AdminSubscriptions() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         <h1 className="text-2xl font-bold">Подписки</h1>
         <span className="text-sm text-muted-foreground">{subscriptions.length} всего</span>
+        <Button variant="outline" size="sm" onClick={handleBackfill} disabled={backfilling}>
+          {backfilling ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+          Восстановить из оплат
+        </Button>
       </div>
 
       <div className="space-y-2">

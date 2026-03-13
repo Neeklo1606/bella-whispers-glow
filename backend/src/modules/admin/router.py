@@ -150,6 +150,19 @@ async def admin_get_payments(
     return [PaymentResponse.model_validate(p) for p in payments]
 
 
+@router.post("/payments/backfill-subscriptions")
+async def admin_backfill_subscriptions(
+    admin_user: User = Depends(require_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Create subscriptions for completed payments that don't have one."""
+    from ...modules.payments.service import PaymentService
+    service = PaymentService(db)
+    result = await service.backfill_subscriptions_from_completed_payments()
+    await db.commit()
+    return result
+
+
 @router.post("/payments/sync-status")
 async def admin_sync_payment_status(
     admin_user: User = Depends(require_admin_user),

@@ -354,6 +354,22 @@ class PaymentService:
         except Exception as e:
             logger.error("[PAYMENT] notification FAILED user_id=%s error=%s", str(payment.user_id), str(e), exc_info=True)
 
+    async def backfill_subscriptions_from_completed_payments(self) -> dict:
+        """
+        Create subscriptions for completed payments that have plan_id but no subscription_id.
+        Returns {created: N, errors: [...]}.
+        """
+        payments = await self.repository.get_completed_without_subscription()
+        created = 0
+        errors = []
+        for payment in payments:
+            try:
+                await self._activate_subscription_from_payment(payment)
+                created += 1
+            except Exception as e:
+                errors.append({"payment_id": str(payment.id), "error": str(e)})
+        return {"created": created, "total": len(payments), "errors": errors}
+
     async def get_user_payments(
         self, user_id: str, skip: int = 0, limit: int = 100
     ) -> List[PaymentResponse]:

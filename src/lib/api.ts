@@ -228,6 +228,18 @@ export async function syncAdminPaymentStatus(): Promise<SyncPaymentStatusRespons
   });
 }
 
+export interface BackfillSubscriptionsResponse {
+  created: number;
+  total: number;
+  errors: Array<{ payment_id: string; error: string }>;
+}
+
+export async function backfillAdminSubscriptions(): Promise<BackfillSubscriptionsResponse> {
+  return adminApiRequest<BackfillSubscriptionsResponse>("/api/admin/payments/backfill-subscriptions", {
+    method: "POST",
+  });
+}
+
 export interface AdminPaymentStats {
   total_revenue: number;
   total_payments: number;

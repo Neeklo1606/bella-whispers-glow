@@ -84,3 +84,14 @@ class PaymentRepository:
             )
         )
         return list(result.scalars().all())
+
+    async def get_completed_without_subscription(self) -> List[Payment]:
+        """Get completed payments that have plan_id but no subscription_id (need backfill)."""
+        result = await self.db.execute(
+            select(Payment).where(
+                Payment.status == PaymentStatus.COMPLETED,
+                Payment.plan_id.isnot(None),
+                Payment.subscription_id.is_(None),
+            )
+        )
+        return list(result.scalars().all())
