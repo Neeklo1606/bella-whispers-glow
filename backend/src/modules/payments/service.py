@@ -68,7 +68,7 @@ class PaymentService:
         
         # Create payment with provider
         try:
-            provider = await self._get_provider()
+            provider = self.provider
             provider_result = await provider.create_payment(
                 amount=amount,
                 currency=payment.currency,
@@ -128,7 +128,7 @@ class PaymentService:
         try:
             # Verify webhook signature (if signature provided)
             if webhook_data.signature:
-                provider = await self._get_provider()
+                provider = self.provider
                 if not await provider.verify_webhook(
                     webhook_data.object, webhook_data.signature
                 ):
