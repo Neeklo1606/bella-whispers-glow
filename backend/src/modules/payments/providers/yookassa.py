@@ -3,6 +3,7 @@ YooKassa payment provider implementation.
 Loads keys from system_settings, fallback to .env.
 """
 import hmac
+import logging
 import hashlib
 import json
 from typing import Dict, Optional
@@ -10,6 +11,8 @@ import httpx
 
 from ....core.config import settings
 from .base import PaymentProvider
+
+logger = logging.getLogger(__name__)
 
 
 _DEFAULT_SHOP_ID = "1294766"
@@ -67,14 +70,24 @@ class YooKassaProvider(PaymentProvider):
                 },
                 timeout=30.0,
             )
-            response.raise_for_status()
-            data = response.json()
 
-            return {
-                "payment_id": data["id"],
-                "payment_url": data["confirmation"]["confirmation_url"],
-                "status": data["status"],
-            }
+        logger.info("[PAYMENT] YooKassa response status=%d", response.status_code)
+
+        if response.status_code >= 400:
+            err_body = response.text[:500] if response.text else "(empty)"
+            logger.error("[PAYMENT] YooKassa FAILED status=%d body=%s", response.status_code, err_body)
+            response.raise_for_status()
+
+        data = response.json()
+        provider_id = data.get("id", "?")
+        conf_url = (data.get("confirmation", {}) or {}).get("confirmation_url", "")[:80] if data.get("confirmation") else "?"
+        logger.info("[PAYMENT] YooKassa success provider_id=%s status=%s confirmation_url=%s...", provider_id, data.get("status"), conf_url)
+
+        return {
+            "payment_id": data["id"],
+            "payment_url": data["confirmation"]["confirmation_url"],
+            "status": data["status"],
+        }
 
     async def verify_webhook(
         self, payload: Dict, signature: Optional[str] = None

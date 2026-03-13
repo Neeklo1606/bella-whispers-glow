@@ -1,4 +1,5 @@
 """Payments module service."""
+import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, List
 from uuid import UUID
@@ -6,6 +7,8 @@ from datetime import datetime, timedelta
 import uuid
 
 from .repository import PaymentRepository
+
+logger = logging.getLogger(__name__)
 from .schemas import PaymentCreate, PaymentResponse, PaymentWebhook
 from .models import Payment, PaymentStatus
 from ..subscriptions.repository import SubscriptionRepository
@@ -37,14 +40,17 @@ class PaymentService:
             Payment response with payment URL
         """
         from uuid import UUID
-        
+
+        logger.info("[PAYMENT] create_payment started user_id=%s plan_id=%s return_url=%s", user_id, payment_data.plan_id, payment_data.return_url or "(empty)")
+
         # Get plan
         plan_repository = SubscriptionPlanRepository(self.db)
         plan_id = UUID(payment_data.plan_id)
         plan = await plan_repository.get_by_id(plan_id)
         if not plan:
+            logger.warning("[PAYMENT] Plan not found plan_id=%s", payment_data.plan_id)
             raise ValueError("Plan not found")
-        
+
         # Calculate amount (use first_month_price if available, else price)
         amount = float(plan.first_month_price or plan.price)
         
@@ -55,6 +61,8 @@ class PaymentService:
         if not currency:
             currency = "RUB"
         
+        logger.info("[PAYMENT] Plan found name=%s amount=%.2f currency=%s", plan.name, amount, currency)
+
         # Create payment record
         payment = await self.repository.create({
             "user_id": UUID(user_id),
@@ -65,7 +73,8 @@ class PaymentService:
             "provider": "yookassa",
             "metadata": {"plan_id": str(plan_id)},
         })
-        
+        logger.info("[PAYMENT] DB record created payment_id=%s status=pending", str(payment.id))
+
         # Create payment with provider
         try:
             provider = self.provider
@@ -81,7 +90,12 @@ class PaymentService:
                     "idempotence_key": str(uuid.uuid4()),
                 },
             )
-            
+            pay_url = provider_result.get("payment_url", "")
+            logger.info(
+                "[PAYMENT] Provider success payment_id=%s provider_payment_id=%s payment_url=%s",
+                str(payment.id), provider_result.get("payment_id"), pay_url[:100] + "..." if len(pay_url) > 100 else pay_url
+            )
+
             # Update payment with provider data
             await self.repository.update(
                 payment.id,
@@ -92,12 +106,14 @@ class PaymentService:
             )
             
             await self.db.refresh(payment)
+            logger.info("[PAYMENT] create_payment completed payment_id=%s user_id=%s amount=%.2f", str(payment.id), user_id, amount)
             return PaymentResponse.model_validate(payment)
-        
+
         except Exception as e:
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.error(f"Failed to create payment: {e}", exc_info=True)
+            logger.error(
+                "[PAYMENT] create_payment FAILED payment_id=%s user_id=%s error=%s",
+                str(payment.id), user_id, str(e), exc_info=True
+            )
             # Mark payment as failed
             await self.repository.update(
                 payment.id,
@@ -122,9 +138,9 @@ class PaymentService:
         Raises:
             ValueError: If webhook validation fails
         """
-        import logging
-        logger = logging.getLogger(__name__)
-        
+        provider_payment_id = webhook_data.object.get("id", "?")
+        logger.info("[PAYMENT] webhook received provider_id=%s event=%s status=%s", provider_payment_id, webhook_data.event, webhook_data.object.get("status"))
+
         try:
             # Verify webhook signature (if signature provided)
             if webhook_data.signature:
@@ -132,27 +148,26 @@ class PaymentService:
                 if not await provider.verify_webhook(
                     webhook_data.object, webhook_data.signature
                 ):
-                    logger.warning("Invalid webhook signature")
+                    logger.warning("[PAYMENT] webhook INVALID signature provider_id=%s", provider_payment_id)
                     raise ValueError("Invalid webhook signature")
             else:
-                logger.warning("Webhook received without signature - security risk in production")
-            
+                logger.warning("[PAYMENT] webhook without signature (security risk) provider_id=%s", provider_payment_id)
+
             # Get payment by provider_payment_id
-            provider_payment_id = webhook_data.object.get("id")
-            if not provider_payment_id:
-                logger.error("Webhook missing payment ID")
+            if not webhook_data.object.get("id"):
+                logger.error("[PAYMENT] webhook missing payment ID in object")
                 raise ValueError("Missing payment ID in webhook")
             
             payment = await self.repository.get_by_provider_payment_id(
                 provider_payment_id
             )
             if not payment:
-                logger.error(f"Payment not found for provider_payment_id: {provider_payment_id}")
+                logger.error("[PAYMENT] webhook payment NOT FOUND provider_id=%s", provider_payment_id)
                 raise ValueError("Payment not found")
             
             # Check if already processed (idempotency)
             if payment.status == PaymentStatus.COMPLETED:
-                logger.info(f"Payment {payment.id} already processed - skipping (idempotency)")
+                logger.info("[PAYMENT] webhook idempotency skip payment_id=%s already completed", str(payment.id))
                 return  # Already processed
             
             # Update payment status
@@ -168,27 +183,26 @@ class PaymentService:
                 
                 # Activate subscription
                 await self._activate_subscription_from_payment(payment)
-                logger.info(f"Payment {payment.id} completed and subscription activated")
+                logger.info("[PAYMENT] webhook SUCCESS payment_id=%s subscription activated", str(payment.id))
             elif webhook_status == "canceled":
                 await self.repository.update(
                     payment.id,
                     {"status": PaymentStatus.FAILED},
                 )
-                logger.info(f"Payment {payment.id} was canceled")
+                logger.info("[PAYMENT] webhook CANCELED payment_id=%s", str(payment.id))
             else:
-                logger.warning(f"Payment {payment.id} received unknown status: {webhook_status}")
-        except ValueError:
-            # Re-raise validation errors
+                logger.warning("[PAYMENT] webhook unknown status=%s payment_id=%s provider_id=%s", webhook_status, str(payment.id), provider_payment_id)
+        except ValueError as ve:
+            logger.error("[PAYMENT] webhook validation error: %s provider_id=%s", str(ve), provider_payment_id)
             raise
         except Exception as e:
-            logger.error(f"Error processing webhook: {e}", exc_info=True)
+            logger.error("[PAYMENT] webhook FAILED provider_id=%s error=%s", provider_payment_id, str(e), exc_info=True)
             raise
 
     async def _activate_subscription_from_payment(self, payment: Payment) -> None:
         """Activate subscription from completed payment."""
-        import logging
-        logger = logging.getLogger(__name__)
-        
+        logger.info("[PAYMENT] _activate_subscription payment_id=%s user_id=%s", str(payment.id), str(payment.user_id))
+
         if not payment.plan_id:
             logger.error(f"Payment {payment.id} has no plan_id")
             return
@@ -248,7 +262,7 @@ class PaymentService:
                     payment.id,
                     {"subscription_id": subscription.id},
                 )
-                logger.info(f"Created and activated subscription {subscription.id} for payment {payment.id}")
+                logger.info("[PAYMENT] Created subscription sub_id=%s payment_id=%s", str(subscription.id), str(payment.id))
         except Exception as e:
             logger.error(f"Error activating subscription from payment {payment.id}: {e}", exc_info=True)
             raise

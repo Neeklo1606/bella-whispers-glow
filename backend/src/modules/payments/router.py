@@ -1,9 +1,12 @@
 """Payments module API routes."""
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
 from ...core.db import get_db
+
+logger = logging.getLogger(__name__)
 from ...core.security import get_current_user_id
 from .service import PaymentService
 from .schemas import PaymentCreate, PaymentResponse, PaymentWebhook
@@ -18,8 +21,11 @@ async def create_payment(
     db: AsyncSession = Depends(get_db),
 ):
     """Create payment."""
+    logger.info("[PAYMENT] API create_payment user_id=%s plan_id=%s", user_id, payment_data.plan_id)
     service = PaymentService(db)
-    return await service.create_payment(user_id, payment_data)
+    result = await service.create_payment(user_id, payment_data)
+    logger.info("[PAYMENT] API create_payment OK payment_id=%s", result.id)
+    return result
 
 
 @router.get("/{payment_id}", response_model=PaymentResponse)
@@ -52,9 +58,9 @@ async def payment_webhook(
     db: AsyncSession = Depends(get_db),
 ):
     """Process payment webhook from provider."""
-    import logging
-    logger = logging.getLogger(__name__)
-    
+    provider_id = webhook_data.object.get("id", "?") if webhook_data.object else "?"
+    logger.info("[PAYMENT] API webhook event=%s provider_id=%s status=%s", webhook_data.event, provider_id, webhook_data.object.get("status") if webhook_data.object else "?")
+
     try:
         service = PaymentService(db)
         await service.process_webhook(webhook_data)
@@ -64,5 +70,5 @@ async def payment_webhook(
         logger.error(f"Webhook validation error: {e}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"Webhook processing error: {e}", exc_info=True)
+        logger.error("[PAYMENT] API webhook error provider_id=%s error=%s", provider_id, str(e), exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
