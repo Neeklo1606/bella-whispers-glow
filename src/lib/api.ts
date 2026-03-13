@@ -405,6 +405,34 @@ export interface MiniappContent {
   faq_items: Array<{ q: string; a: string }>;
 }
 
+export interface CreatePaymentRequest {
+  plan_id: string;
+  currency?: string;
+  return_url: string;
+}
+
+export interface CreatePaymentResponse {
+  id: string;
+  payment_url: string;
+  amount: number;
+  status: string;
+  [key: string]: unknown;
+}
+
+/** Create payment (user auth required). Redirect to payment_url for YooKassa. */
+export async function createPayment(
+  data: CreatePaymentRequest
+): Promise<CreatePaymentResponse> {
+  return userApiRequest<CreatePaymentResponse>("/api/payments/create", {
+    method: "POST",
+    body: JSON.stringify({
+      plan_id: data.plan_id,
+      currency: data.currency || "RUB",
+      return_url: data.return_url,
+    }),
+  });
+}
+
 /** Get MiniApp content (public endpoint) */
 export async function getMiniappContent(): Promise<MiniappContent> {
   const response = await fetch(`${API_BASE_URL}/api/miniapp/content`);

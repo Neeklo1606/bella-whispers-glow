@@ -1,7 +1,7 @@
 """
 Main menu keyboard.
 """
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 
 from ..utils.runtime_settings import get as get_runtime
 
@@ -45,20 +45,17 @@ def get_tariff_agreement_keyboard(offer_url: str) -> InlineKeyboardMarkup:
 
 
 def get_tariff_keyboard(plans: list, miniapp_url: str) -> InlineKeyboardMarkup:
-    """Buttons: Оплата российской картой (per plan), Mini App, Назад."""
-    buttons = []
-    for p in plans:
-        plan_id = p.get("id", "")
-        if plan_id:
-            buttons.append([
-                InlineKeyboardButton(
-                    text="💳 Оплата российской картой",
-                    callback_data=f"pay_card:{plan_id}",
-                ),
-            ])
-    miniapp_pay = f"{miniapp_url.rstrip('/')}/pricing"
-    buttons.append([InlineKeyboardButton(text="🌐 Оплатить в приложении", url=miniapp_pay)])
-    buttons.append([InlineKeyboardButton(text="◀️ Назад", callback_data="tariffs")])
+    """Buttons: Оплатить подписку (Web App → Mini App + YooKassa), Назад."""
+    miniapp_pay_url = f"{miniapp_url.rstrip('/')}/pricing"
+    buttons = [
+        [
+            InlineKeyboardButton(
+                text="💳 Оплатить подписку",
+                web_app=WebAppInfo(url=miniapp_pay_url),
+            ),
+        ],
+        [InlineKeyboardButton(text="◀️ Назад", callback_data="tariffs")],
+    ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
