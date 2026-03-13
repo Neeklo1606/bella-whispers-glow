@@ -34,6 +34,7 @@ export default function AdminSubscriptions() {
   const [extendDays, setExtendDays] = useState(30);
   const [extending, setExtending] = useState(false);
   const [revokingId, setRevokingId] = useState<string | null>(null);
+  const [backfilling, setBackfilling] = useState(false);
   const { toast } = useToast();
 
   function load() {
@@ -64,6 +65,25 @@ export default function AdminSubscriptions() {
       });
     } finally {
       setExtending(false);
+    }
+  }
+
+  async function handleBackfill() {
+    setBackfilling(true);
+    try {
+      const res = await backfillAdminSubscriptions();
+      load();
+      if (res.created > 0) {
+        toast({ title: "Восстановлено", description: `Создано ${res.created} подписок` });
+      } else if (res.total === 0) {
+        toast({ title: "Нечего восстанавливать", description: "Нет завершённых платежей без подписки" });
+      } else if (res.errors?.length) {
+        toast({ title: "Ошибки", description: res.errors.map((e) => e.error).join("; "), variant: "destructive" });
+      }
+    } catch (e) {
+      toast({ title: "Ошибка", description: e instanceof Error ? e.message : "Не удалось", variant: "destructive" });
+    } finally {
+      setBackfilling(false);
     }
   }
 

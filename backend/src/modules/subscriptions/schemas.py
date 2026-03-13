@@ -34,11 +34,11 @@ class SubscriptionResponse(BaseModel):
     """Subscription response schema."""
     id: str
     user_id: str
-    plan_id: str
+    plan_id: Optional[str] = None
     status: str
-    start_date: datetime
-    end_date: datetime
-    auto_renew: bool
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+    auto_renew: bool = True
     next_billing_date: Optional[datetime] = None
     created_at: datetime
 
