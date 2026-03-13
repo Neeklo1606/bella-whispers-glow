@@ -1,7 +1,11 @@
 """Subscriptions module Pydantic schemas."""
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional, List
 from datetime import datetime
+
+
+def _coerce_uuid(v):
+    return str(v) if v is not None else None
 
 
 class SubscriptionPlanBase(BaseModel):
@@ -32,6 +36,16 @@ class SubscriptionBase(BaseModel):
 
 class SubscriptionResponse(BaseModel):
     """Subscription response schema."""
+
+    @field_validator("id", "user_id", "plan_id", "status", mode="before")
+    @classmethod
+    def coerce_ids(cls, v):
+        if v is None:
+            return None
+        if hasattr(v, "value"):  # enum (status)
+            return v.value
+        return str(v)
+
     id: str
     user_id: str
     plan_id: Optional[str] = None
